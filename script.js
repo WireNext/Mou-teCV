@@ -11,7 +11,7 @@ const fonts = [
   },
   {
     nom: 'TRAM d’Alacant',
-    url: 'https://tuusuario.github.io/tram-alacant/incidencias.json',
+    url: 'https://raw.githubusercontent.com/WireNext/TramAlicanteIncidencias/refs/heads/main/avisos_tramalacant.json',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/TRAM_-_Metropolitano_de_Alicante_-T-.svg'
   }
 ];
