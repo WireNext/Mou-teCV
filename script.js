@@ -1,3 +1,24 @@
+const colorsLineasMetroValencia = {
+  "1": "#e3ad42",
+  "2": "#d1438c",
+  "3": "#c42438",
+  "4": "#054f8b",
+  "5": "#008c61",
+  "6": "#8466a9",
+  "7": "#db8a35",
+  "8": "#2db4ca",
+  "9": "#a37750",
+  "10": "#bad284"
+};
+
+const coloresLineasTramAlacant = {
+  "1": "#f03635",
+  "2": "#00953a",
+  "3": "#fec100",
+  "4": "#c29cc1",
+  "5": "#004f8e"
+};
+
 const coloresLineasCercanias = {
   "C1": "#4991c3",
   "C2": "#ffb010",
