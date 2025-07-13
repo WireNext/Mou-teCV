@@ -68,6 +68,7 @@ const fonts = [
         return `<li>${lineas}<br>${texto}</li>`;
       }).join('') + '</ul>';
     }
+  }
 ];
 
 const contenedor = document.getElementById('contenidor-incidencies');
