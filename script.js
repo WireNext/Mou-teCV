@@ -151,13 +151,10 @@ fonts.forEach(font => {
     .then(data => {
       let incidencias;
       if (font.nom === 'Rodalia València') {
-        // Parseamos contenido JSON embebido de AllOrigins
-        const parsed = JSON.parse(data.contents);
-        incidencias = parsed || [];
-      } else {
+        incidencias = data || [];
+    } else {
         incidencias = data;
-      }
-
+    }
       if (!Array.isArray(incidencias) || incidencias.length === 0) {
         estado.textContent = '✅';
         detalle.innerHTML = '<p>No hi ha incidències.</p>';
