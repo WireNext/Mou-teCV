@@ -1,257 +1,173 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Línies de Transport</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Líneas de Transporte</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
       background-color: #121212;
-      color: #e0e0e0;
+      color: white;
     }
 
     header {
       background-color: #1f1f1f;
-      padding: 1.2rem 2rem;
-      text-align: center;
-      font-size: 1.6rem;
-      font-weight: bold;
-      color: #ffffff;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-      letter-spacing: 0.5px;
-    }
-
-    main {
-      padding: 2rem;
-      max-width: 800px;
-      margin: auto;
-    }
-
-    footer {
-      margin-top: 3rem;
-      padding: 1rem 2rem;
-      background-color: #1f1f1f;
-      color: #999;
-      text-align: center;
-      font-size: 0.9rem;
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.7);
-    }
-
-    .bloque-fuente {
-      background-color: #1e1e1e;
-      margin: 1.5rem 0;
-      border-radius: 14px;
       padding: 1rem;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
-      transition: background-color 0.3s;
-    }
-
-    .menu-transport {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      gap: 1rem;
-      outline: none;
-    }
-
-    .menu-transport:focus {
-      outline: none;
-      background-color: transparent; /* evitar fondo blanco */
-    }
-
-    .logo-transport {
-      width: 48px;
-      height: 48px;
-      border-radius: 10px;
-      background-color: #fff;
-      padding: 4px;
-    }
-
-    .nombre-operador {
-      font-size: 1.3rem;
+      text-align: center;
+      font-size: 1.5rem;
       font-weight: bold;
-      color: #fff;
+      border-bottom: 2px solid #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+
+    .logos {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .logo-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .logo-btn img {
+      width: 100px;
+      height: auto;
+      filter: brightness(1);
+    }
+
+    .logo-btn:hover {
+      transform: scale(1.1);
     }
 
     .submenu-lineas {
       display: none;
+      flex-wrap: wrap;
+      gap: 0.5rem;
       margin-top: 1rem;
-      padding-left: 0.5rem;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-5px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .submenu-lineas button {
-      display: block;
-      margin: 8px 0;
-      padding: 0.6rem 1rem;
-      border: none;
+      background-color: #333;
       color: white;
-      font-weight: 600;
-      border-radius: 6px;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
       cursor: pointer;
-      width: 100%;
-      text-align: left;
-      transition: opacity 0.2s;
+      font-weight: bold;
+      transition: background-color 0.3s;
     }
 
     .submenu-lineas button:hover {
       opacity: 0.85;
     }
 
-    .info-recorrido {
-      margin-top: 6px;
-      padding: 0.5rem 1rem;
-      background-color: #2a2a2a;
-      border-left: 4px solid #666;
-      border-radius: 6px;
-      font-size: 0.95rem;
-      color: #ccc;
+    .submenu-lineas button:focus,
+    .submenu-lineas button:active {
+      background-color: inherit !important;
+      outline: none;
+      box-shadow: none;
+      color: white;
+    }
+
+    .recorrido {
+      margin-top: 1rem;
+      background-color: #1e1e1e;
+      padding: 1rem;
+      border-radius: 5px;
+      border: 1px solid #444;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #1f1f1f;
+      border-top: 2px solid #333;
+      margin-top: 3rem;
+      color: #888;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
-  <header>Línies de Transport</header>
-  <main id="contenidor-lineas"></main>
+  <header>Líneas de Transporte</header>
+
+  <div class="container">
+    <div class="logos">
+      <button class="logo-btn" onclick="mostrarSubmenu('metro')">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/74/Metrovalencia_logo.svg" alt="Metrovalencia">
+      </button>
+      <button class="logo-btn" onclick="mostrarSubmenu('tram')">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/76/TRAM_d%27Alacant_logo.svg" alt="TRAM">
+      </button>
+      <button class="logo-btn" onclick="mostrarSubmenu('rodalies')">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Rodalies_de_Catalunya_logo.svg" alt="Rodalies">
+      </button>
+    </div>
+
+    <div id="submenu-metro" class="submenu-lineas">
+      <button style="background-color: #e30613;" onclick="mostrarRecorrido('Línea 1: Bétera - Castelló')">Línea 1</button>
+      <button style="background-color: #f39200;" onclick="mostrarRecorrido('Línea 2: Llíria - Torrent Avinguda')">Línea 2</button>
+      <button style="background-color: #0066b3;" onclick="mostrarRecorrido('Línea 3: Rafelbunyol - Aeroport')">Línea 3</button>
+      <button style="background-color: #009540;" onclick="mostrarRecorrido('Línea 4: Mas del Rosari - Doctor Lluch')">Línea 4</button>
+      <button style="background-color: #b8205b;" onclick="mostrarRecorrido('Línea 5: Marítim - Aeroport')">Línea 5</button>
+      <button style="background-color: #c06eb3;" onclick="mostrarRecorrido('Línea 6: Tossal del Rei - Marítim')">Línea 6</button>
+      <button style="background-color: #00ae9d;" onclick="mostrarRecorrido('Línea 7: Marítim - Torrent Avinguda')">Línea 7</button>
+      <button style="background-color: #ea1d76;" onclick="mostrarRecorrido('Línea 9: Alboraia Peris Aragó - Riba-roja de Túria')">Línea 9</button>
+    </div>
+
+    <div id="submenu-tram" class="submenu-lineas">
+      <button style="background-color: #007bc7;" onclick="mostrarRecorrido('Línea 1: Luceros - Benidorm')">Línea 1</button>
+      <button style="background-color: #009640;" onclick="mostrarRecorrido('Línea 2: Luceros - Sant Vicent del Raspeig')">Línea 2</button>
+      <button style="background-color: #e94e1b;" onclick="mostrarRecorrido('Línea 3: Luceros - El Campello')">Línea 3</button>
+      <button style="background-color: #8b1d8b;" onclick="mostrarRecorrido('Línea 4: Luceros - Plaza La Coruña')">Línea 4</button>
+      <button style="background-color: #ffcd00;" onclick="mostrarRecorrido('Línea 5: Porta del Mar - Plaza La Coruña')">Línea 5</button>
+    </div>
+
+    <div id="submenu-rodalies" class="submenu-lineas">
+      <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R1: L\'Hospitalet - Maçanet')">R1</button>
+      <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R2: Sant Vicenç de Calders - Maçanet')">R2</button>
+      <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R3: L\'Hospitalet - Puigcerdà')">R3</button>
+      <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R4: Sant Vicenç de Calders - Manresa')">R4</button>
+      <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R7: Barcelona Sant Andreu Arenal - Cerdanyola Universitat')">R7</button>
+      <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R8: Martorell - Granollers Centre')">R8</button>
+    </div>
+
+    <div id="recorrido" class="recorrido" style="display: none;"></div>
+  </div>
+
   <footer>
-    <!-- Footer limpio, sin nombre -->
-    &copy; 2025 – Informació de transport públic
+    &copy; 2025 Transporte Público. Todos los derechos reservados.
   </footer>
 
   <script>
-    const coloresMetrovalencia = {
-      '1': '#E3051A',
-      '2': '#009ADA',
-      '3': '#008751',
-      '4': '#FFD503',
-      '5': '#E76DAD',
-      '6': '#00BFB3',
-      '7': '#B5437A',
-      '8': '#DA9600',
-      '9': '#AC703A',
-      '10': '#ED6C00'
-    };
+    function mostrarSubmenu(tipo) {
+      const submenus = document.querySelectorAll('.submenu-lineas');
+      submenus.forEach(sub => sub.style.display = 'none');
+      document.getElementById('recorrido').style.display = 'none';
 
-    const coloresTram = {
-      '1': '#004B9B',
-      '2': '#F5821F',
-      '3': '#9E1F63',
-      '4': '#64A70B',
-      '5': '#A31E2D'
-    };
-
-    const coloresRodalies = {
-      'C1': '#F37321',
-      'C2': '#B8412C',
-      'C3': '#007AC2',
-      'C4': '#70AD47',
-      'C5': '#7030A0',
-      'C6': '#264653'
-    };
-
-    const datosLineas = [
-      {
-        nombre: 'Metrovalencia',
-        logo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Isotip_de_Metroval%C3%A8ncia.svg',
-        colores: coloresMetrovalencia,
-        lineas: {
-          '1': 'Bétera - Castelló',
-          '2': 'Llíria - Torrent Avinguda',
-          '3': 'Rafelbunyol - Aeroport',
-          '4': 'Mas del Rosari - Doctor Lluch',
-          '5': 'Marítim - Àngel Guimerà',
-          '6': 'Tossal del Rei - Marítim',
-          '7': 'Marítim - Torrent Avinguda',
-          '8': 'Marítim - Neptú',
-          '9': 'Alboraia Peris Aragó - Riba-roja',
-          '10': 'Alacant - Natzaret'
-        }
-      },
-      {
-        nombre: 'TRAM d’Alacant',
-        logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/TRAM_-_Metropolitano_de_Alicante_-T-.svg',
-        colores: coloresTram,
-        lineas: {
-          '1': 'Luceros – Benidorm',
-          '2': 'Luceros – Sant Vicent del Raspeig',
-          '3': 'Luceros – El Campello',
-          '4': 'Luceros – Plaza La Coruña',
-          '5': 'Porta del Mar – Plaza La Coruña'
-        }
-      },
-      {
-        nombre: 'Rodalia València',
-        logo: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg',
-        colores: coloresRodalies,
-        lineas: {
-          'C1': 'València Nord – Gandia',
-          'C2': 'València Nord – Moixent',
-          'C3': 'València Nord – Utiel',
-          'C4': 'València Nord – Xirivella',
-          'C5': 'València Nord – Caudiel',
-          'C6': 'València Nord – Castelló de la Plana'
-        }
+      const submenu = document.getElementById(`submenu-${tipo}`);
+      if (submenu) {
+        submenu.style.display = 'flex';
       }
-    ];
+    }
 
-    const contenedor = document.getElementById('contenidor-lineas');
-
-    datosLineas.forEach(grupo => {
-      const seccion = document.createElement('section');
-      seccion.className = 'bloque-fuente';
-
-      const menu = document.createElement('div');
-      menu.className = 'menu-transport';
-      menu.setAttribute('role', 'button');
-      menu.setAttribute('aria-expanded', 'false');
-
-      const logo = document.createElement('img');
-      logo.src = grupo.logo;
-      logo.alt = grupo.nombre + ' Logo';
-      logo.className = 'logo-transport';
-
-      const nombre = document.createElement('div');
-      nombre.className = 'nombre-operador';
-      nombre.textContent = grupo.nombre;
-
-      const contenedorLineas = document.createElement('div');
-      contenedorLineas.className = 'submenu-lineas';
-
-      for (const linea in grupo.lineas) {
-        const boton = document.createElement('button');
-        boton.textContent = 'Línia ' + linea;
-        boton.style.backgroundColor = grupo.colores[linea] || '#999';
-
-        boton.addEventListener('click', () => {
-          contenedorLineas.querySelectorAll('.info-recorrido').forEach(e => e.remove());
-
-          const recorrido = document.createElement('div');
-          recorrido.className = 'info-recorrido';
-          recorrido.textContent = 'Recorregut: ' + grupo.lineas[linea];
-          boton.insertAdjacentElement('afterend', recorrido);
-        });
-
-        contenedorLineas.appendChild(boton);
-      }
-
-      menu.addEventListener('click', () => {
-        const expanded = menu.getAttribute('aria-expanded') === 'true';
-        menu.setAttribute('aria-expanded', !expanded);
-        contenedorLineas.style.display = expanded ? 'none' : 'block';
-      });
-
-      menu.appendChild(logo);
-      menu.appendChild(nombre);
-      seccion.appendChild(menu);
-      seccion.appendChild(contenedorLineas);
-      contenedor.appendChild(seccion);
-    });
+    function mostrarRecorrido(texto) {
+      const div = document.getElementById('recorrido');
+      div.innerHTML = `<strong>${texto}</strong>`;
+      div.style.display = 'block';
+    }
   </script>
 </body>
 </html>
