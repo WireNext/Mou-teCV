@@ -35,13 +35,30 @@ main {
   margin: auto;
 }
 
-/* Bloque del menú de transporte */
-.bloque-fuente {
-  margin-bottom: 2rem;
+main#contenidor-incidencies {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
+/* Bloque de cada operador */
+.bloque-fuente {
+  flex: 1 1 280px;
+  max-width: 320px;
+  min-width: 280px;
+  background-color: var(--card);
+  padding: 1rem;
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+/* Menú transportes con logo + nombre horizontal siempre */
 .menu-transport {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
@@ -49,17 +66,30 @@ main {
   border: none;
   background: transparent;
   padding: 0;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
+/* Logo ajustado para tamaño pequeño pero claro */
 .logo-transport {
   width: 40px;
   height: 40px;
   object-fit: contain;
 }
 
+/* Texto de estado de incidencias */
 .estado-incidencias {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 500;
   user-select: none;
+}
+
+/* Texto de detalle */
+.detalle-incidencias {
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  font-size: 0.95em;
+  line-height: 1.4;
 }
 
 footer {
@@ -71,25 +101,3 @@ footer a {
   color: var(--accent);
   text-decoration: none;
 }
-
-main#contenidor-incidencies {
-  display: flex;
-  gap: 1rem;       /* espacio entre bloques */
-  justify-content: center; /* opcional, para centrar los bloques */
-  flex-wrap: wrap; /* para que si no caben, se bajen a otra fila */
-}
-
-.bloque-fuente {
-  flex: 1 1 280px; /* crecer, encoger, ancho base 280px */
-  max-width: 320px;
-  min-width: 280px;
-  box-sizing: border-box;
-}
-
-.detalle-incidencias {
-  white-space: pre-line;
-  overflow-wrap: break-word;
-  font-size: 0.95em;
-  line-height: 1.4;
-}
-
