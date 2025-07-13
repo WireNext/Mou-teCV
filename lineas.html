@@ -1,415 +1,108 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Líneas de Transporte</title>
-  <style>
-    /* Variables para tema claro y oscuro */
-:root {
-  --fondo: #f8f9fa;
-  --texto: #333;
-  --header-bg: #222;
-  --header-texto: #eee;
-  --bloque-bg: white;
-  --bloque-border: #ddd;
-  --detalle-bg: #fafafa;
-  --linea-default: #666;
-}
-
-body.tema-oscuro {
-  --fondo: #121212;
-  --texto: #ddd;
-  --header-bg: #1e1e1e;
-  --header-texto: #eee;
-  --bloque-bg: #222;
-  --bloque-border: #444;
-  --detalle-bg: #2a2a2a;
-  --linea-default: #aaa;
-}
-
-body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background: var(--fondo);
-  color: var(--texto);
-  margin: 0; padding: 0;
-  transition: background 0.3s, color 0.3s;
-}
-
-header {
-  background: var(--header-bg);
-  color: var(--header-texto);
-  padding: 1em;
-  text-align: center;
-  font-weight: bold;
-  font-size: 1.5em;
-  position: relative;
-}
-
-#btn-tema {
-  position: absolute;
-  right: 1em;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--header-texto);
-  font-size: 1.3em;
-  cursor: pointer;
-  user-select: none;
-}
-
-#btn-tema:focus {
-  outline: 2px solid var(--header-texto);
-  outline-offset: 2px;
-}
-
-main {
-  max-width: 700px;
-  margin: 1.5em auto;
-  padding: 0 1em;
-}
-
-.bloque-fuente {
-  background: var(--bloque-bg);
-  border-radius: 8px;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 0.1);
-  margin-bottom: 1.2em;
-  overflow: hidden;
-  border: 1px solid var(--bloque-border);
-  transition: background 0.3s, border-color 0.3s;
-}
-
-.menu-transport {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 0.75em 1em;
-  gap: 1em;
-  border-bottom: 1px solid var(--bloque-border);
-  user-select: none;
-}
-
-.menu-transport[aria-expanded="true"] {
-  background-color: var(--detalle-bg);
-}
-
-.logo-transport {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-}
-
-.nombre-operador {
-  font-weight: 600;
-  flex-grow: 1;
-  font-size: 1.1em;
-}
-
-.estado-incidencias {
-  font-size: 1.5em;
-}
-
-.detalle-incidencias {
-  padding: 1em;
-  font-size: 0.95em;
-  line-height: 1.4;
-  display: none;
-  background: var(--detalle-bg);
-  transition: background 0.3s;
-}
-
-.linea-metro {
-  display: inline-block;
-  min-width: 24px;
-  color: white;
-  padding: 0 6px;
-  margin-right: 4px;
-  border-radius: 3px;
-  font-weight: bold;
-  font-size: 0.85em;
-}
-
-ul {
-  margin: 0;
-  padding-left: 1.2em;
-}
-li {
-  margin-bottom: 0.6em;
-}
-
-@media (max-width: 480px) {
-  .menu-transport {
-    gap: 0.5em;
-    padding: 0.5em 0.75em;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Transporte desplegable con imágenes y logos</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
   }
-  .logo-transport {
-    width: 36px;
-    height: 36px;
+  h1 {
+    text-align: center;
+    margin-bottom: 30px;
   }
-}
-  </style>
+  h2 {
+    border-bottom: 2px solid #333;
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2 img {
+    height: 30px;
+    width: auto;
+  }
+  .transporte {
+    margin-bottom: 30px;
+  }
+  .linea {
+    cursor: pointer;
+    background-color: #eee;
+    padding: 10px 15px;
+    margin: 5px 0;
+    font-weight: bold;
+    border-radius: 5px;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
+  .linea:hover {
+    background-color: #ddd;
+  }
+  .imagen {
+    display: none;
+    margin: 10px 30px;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  }
+</style>
 </head>
-</head>
-<body class="tema-claro">
+<body>
 
-<header>
-  Incidències de Transport
-  <button id="btn-tema" aria-label="Canviar tema" title="Canviar tema">🌙</button>
-</header>
+<h1>Transporte público: Líneas desplegables</h1>
 
-<main id="contenidor-incidencies"> <div id="submenu-metro" class="submenu-lineas">
-      <button style="background-color: #e30613;" onclick="mostrarRecorrido('Línea 1: Bétera - Castelló')">Línea 1</button>
-      <button style="background-color: #f39200;" onclick="mostrarRecorrido('Línea 2: Llíria - Torrent Avinguda')">Línea 2</button>
-      <button style="background-color: #0066b3;" onclick="mostrarRecorrido('Línea 3: Rafelbunyol - Aeroport')">Línea 3</button>
-      <button style="background-color: #009540;" onclick="mostrarRecorrido('Línea 4: Mas del Rosari - Doctor Lluch')">Línea 4</button>
-      <button style="background-color: #b8205b;" onclick="mostrarRecorrido('Línea 5: Marítim - Aeroport')">Línea 5</button>
-      <button style="background-color: #c06eb3;" onclick="mostrarRecorrido('Línea 6: Tossal del Rei - Marítim')">Línea 6</button>
-      <button style="background-color: #00ae9d;" onclick="mostrarRecorrido('Línea 7: Marítim - Torrent Avinguda')">Línea 7</button>
-      <button style="background-color: #ea1d76;" onclick="mostrarRecorrido('Línea 9: Alboraia Peris Aragó - Riba-roja de Túria')">Línea 9</button>
-    </div>
+<div class="transporte" id="metrovalencia">
+  <h2>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Metrovalencia_logo.svg/120px-Metrovalencia_logo.svg.png" alt="Logo Metrovalencia" />
+    Metrovalencia
+  </h2>
+  <div class="linea" onclick="toggleImagen('mv1')">Línea 1</div>
+  <img id="mv1" class="imagen" src="https://via.placeholder.com/400x200?text=Metrovalencia+Línea+1" alt="Metrovalencia Línea 1" />
 
-    <div id="submenu-tram" class="submenu-lineas">
-      <button style="background-color: #007bc7;" onclick="mostrarRecorrido('Línea 1: Luceros - Benidorm')">Línea 1</button>
-      <button style="background-color: #009640;" onclick="mostrarRecorrido('Línea 2: Luceros - Sant Vicent del Raspeig')">Línea 2</button>
-      <button style="background-color: #e94e1b;" onclick="mostrarRecorrido('Línea 3: Luceros - El Campello')">Línea 3</button>
-      <button style="background-color: #8b1d8b;" onclick="mostrarRecorrido('Línea 4: Luceros - Plaza La Coruña')">Línea 4</button>
-      <button style="background-color: #ffcd00;" onclick="mostrarRecorrido('Línea 5: Porta del Mar - Plaza La Coruña')">Línea 5</button>
-    </div>
+  <div class="linea" onclick="toggleImagen('mv2')">Línea 2</div>
+  <img id="mv2" class="imagen" src="https://via.placeholder.com/400x200?text=Metrovalencia+Línea+2" alt="Metrovalencia Línea 2" />
 
-    <div id="submenu-rodalies" class="submenu-lineas">
-      <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R1: L\'Hospitalet - Maçanet')">R1</button>
-      <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R2: Sant Vicenç de Calders - Maçanet')">R2</button>
-      <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R3: L\'Hospitalet - Puigcerdà')">R3</button>
-      <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R4: Sant Vicenç de Calders - Manresa')">R4</button>
-      <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R7: Barcelona Sant Andreu Arenal - Cerdanyola Universitat')">R7</button>
-      <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R8: Martorell - Granollers Centre')">R8</button>
-    </div>
+  <div class="linea" onclick="toggleImagen('mv3')">Línea 3</div>
+  <img id="mv3" class="imagen" src="https://via.placeholder.com/400x200?text=Metrovalencia+Línea+3" alt="Metrovalencia Línea 3" />
+</div>
 
-    <div id="recorrido" class="bloque-fuente" style="display: none;"></div>
-  </div></main>
-  
-  <footer>
-    &copy; 2025 Transporte Público. Todos los derechos reservados.
-  </footer>
+<div class="transporte" id="tramalicante">
+  <h2>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Tram_alicante_logo.svg/120px-Tram_alicante_logo.svg.png" alt="Logo Tram Alicante" />
+    Tram de Alicante
+  </h2>
+  <div class="linea" onclick="toggleImagen('ta1')">Línea 1</div>
+  <img id="ta1" class="imagen" src="https://via.placeholder.com/400x200?text=Tram+Alicante+Línea+1" alt="Tram Alicante Línea 1" />
 
-</body>
+  <div class="linea" onclick="toggleImagen('ta2')">Línea 2</div>
+  <img id="ta2" class="imagen" src="https://via.placeholder.com/400x200?text=Tram+Alicante+Línea+2" alt="Tram Alicante Línea 2" />
+</div>
 
-  <script>
-    const colorsLineasMetroValencia = {
-  "1": "#e3ad42",
-  "2": "#d1438c",
-  "3": "#c42438",
-  "4": "#054f8b",
-  "5": "#008c61",
-  "6": "#8466a9",
-  "7": "#db8a35",
-  "8": "#2db4ca",
-  "9": "#a37750",
-  "10": "#bad284"
-};
+<div class="transporte" id="cercanias">
+  <h2>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Renfe_Cercan%C3%ADas_logo.svg/120px-Renfe_Cercan%C3%ADas_logo.svg.png" alt="Logo Cercanías" />
+    Cercanías
+  </h2>
+  <div class="linea" onclick="toggleImagen('ce1')">Línea C-1</div>
+  <img id="ce1" class="imagen" src="https://via.placeholder.com/400x200?text=Cercanías+Línea+C-1" alt="Cercanías Línea C-1" />
 
-const coloresLineasTramAlacant = {
-  "1": "#f03635",
-  "2": "#00953a",
-  "3": "#fec100",
-  "4": "#c29cc1",
-  "5": "#004f8e"
-};
+  <div class="linea" onclick="toggleImagen('ce2')">Línea C-2</div>
+  <img id="ce2" class="imagen" src="https://via.placeholder.com/400x200?text=Cercanías+Línea+C-2" alt="Cercanías Línea C-2" />
+</div>
 
-const coloresLineasCercanias = {
-  "C1": "#4991c3",
-  "C2": "#ffb010",
-  "C3": "#97198b",
-  "C4": "#fe191b",
-  "C5": "#008925",
-  "C6": "#023286"
-};
-
-const fonts = [
-  {
-    nom: 'Rodalia València',
-    url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.renfe.com/content/renfe/es/es/grupo-renfe/comunicacion/renfe-al-dia/avisos/jcr:content/root/responsivegrid/rfincidentreports_co.noticeresults.json?noticetags=valencia'),
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg',
-    formatter: (incidencias) => {
-      if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
-      const lineas = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'];
-      const variantes = lineas.flatMap(l => [l, l.replace('C', 'C-')]);
-
-      const incidenciasCercanias = incidencias.filter(i =>
-      variantes.some(v => i.paragraph.includes(v))
-    );
-
-      if (incidenciasCercanias.length === 0) return 'No hi ha incidències en C1-C6.';
-
-      return '<ul>' + incidenciasCercanias.map(i => {
-        const tags = i.tags?.filter(t => /^C[1-6]$/.test(t.text)) || [];
-        const tagsHTML = tags.map(t => {
-          const color = coloresLineasCercanias[t.text] || '#999';
-          return `<span class="linea-cercanias" style="background-color: ${color}">${t.text}</span>`;
-        }).join(' ');
-
-        const texto = i.paragraph
-          .replace(/\n/g, '<br>')
-          .replace(/–/g, '– ')
-          .replace(/([.])(?=[^\s])/g, '. ');
-
-        const fecha = i.chipText ? `<small class="fecha-aviso">${i.chipText}</small>` : '';
-
-        return `<li>${tagsHTML}<br><p>${texto}</p>${fecha}<br><a href="${i.link}" target="${i.target || '_blank'}" rel="noopener noreferrer">Más info</a></li>`;
-      }).join('') + '</ul>';
-    }
-  },
-  {
-    nom: 'Metrovalencia',
-    url: 'https://raw.githubusercontent.com/WireNext/MetroValenciaIncidencias/refs/heads/main/avisos_metrovalencia.json',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Isotip_de_Metroval%C3%A8ncia.svg',
-    formatter: (incidencias) => {
-      if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
-      return '<ul>' + incidencias.map(i => {
-        const lineas = (i.lineas_afectadas && i.lineas_afectadas.length > 0)
-          ? i.lineas_afectadas.map(linea => {
-              const num = linea.match(/\d+/)?.[0];
-              const color = colorsLineasMetroValencia[num] || getComputedStyle(document.body).getPropertyValue('--linea-default').trim();
-              return `<span class="linea-metro" style="background-color: ${color}">${num}</span>`;
-            }).join(' ')
-          : 'Sense línies afectades';
-        const texto = i.texto_alerta
-          .replace(/\n/g, '<br>')
-          .replace(/–/g, '– ')
-          .replace(/([.])(?=[^\s])/g, '. ');
-        return `<li>${lineas}<br>${texto}</li>`;
-      }).join('') + '</ul>';
-    }
-  },
-  {
-    nom: 'TRAM d’Alacant',
-    url: 'https://raw.githubusercontent.com/WireNext/TramAlicanteIncidencias/refs/heads/main/avisos_tramalacant.json',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/TRAM_-_Metropolitano_de_Alicante_-T-.svg',
-    formatter: (incidencias) => {
-      if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
-      return '<ul>' + incidencias.map(i => {
-        const lineas = (i.lineas_afectadas && i.lineas_afectadas.length > 0)
-          ? i.lineas_afectadas.map(linea => {
-              const num = linea.match(/\d+/)?.[0];
-              const color = coloresLineasTramAlacant[num] || getComputedStyle(document.body).getPropertyValue('--linea-default').trim();
-              return `<span class="linea-metro" style="background-color: ${color}">${num}</span>`;
-            }).join(' ')
-          : 'Sense línies afectades';
-        const texto = i.texto_alerta
-          .replace(/\n/g, '<br>')
-          .replace(/–/g, '– ')
-          .replace(/([.])(?=[^\s])/g, '. ');
-        return `<li>${lineas}<br>${texto}</li>`;
-      }).join('') + '</ul>';
-    }
-  }
-];
-
-const contenedor = document.getElementById('contenidor-incidencies');
-
-fonts.forEach(font => {
-  const bloqueFuente = document.createElement('section');
-  bloqueFuente.className = 'bloque-fuente';
-
-  const menu = document.createElement('div');
-  menu.className = 'menu-transport';
-  menu.tabIndex = 0;
-  menu.setAttribute('aria-expanded', 'false');
-  menu.setAttribute('role', 'button');
-
-  const imgLogo = document.createElement('img');
-  imgLogo.src = font.logo;
-  imgLogo.alt = `${font.nom} Logo`;
-  imgLogo.className = 'logo-transport';
-
-  const nombreOperador = document.createElement('div');
-  nombreOperador.className = 'nombre-operador';
-  nombreOperador.textContent = font.nom;
-
-  const estado = document.createElement('span');
-  estado.className = 'estado-incidencias';
-  estado.textContent = '⏳';
-
-  const detalle = document.createElement('div');
-  detalle.className = 'detalle-incidencias';
-
-  menu.appendChild(imgLogo);
-  menu.appendChild(nombreOperador);
-  menu.appendChild(estado);
-
-  bloqueFuente.appendChild(menu);
-  bloqueFuente.appendChild(detalle);
-  contenedor.appendChild(bloqueFuente);
-
-  fetch(font.url)
-    .then(res => {
-      if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
-      return res.json();
-    })
-    .then(data => {
-      let incidencias;
-      if (font.nom === 'Rodalia València') {
-        incidencias = data || [];
+<script>
+  function toggleImagen(id) {
+    const img = document.getElementById(id);
+    if (img.style.display === "block") {
+      img.style.display = "none";
     } else {
-        incidencias = data;
+      img.style.display = "block";
     }
-      if (!Array.isArray(incidencias) || incidencias.length === 0) {
-        estado.textContent = '✅';
-        detalle.innerHTML = '<p>No hi ha incidències.</p>';
-      } else {
-        estado.textContent = '⚠️';
-        const html = font.formatter
-          ? font.formatter(incidencias)
-          : '<ul>' + incidencias.map(i => `<li>${i.texto_alerta}</li>`).join('') + '</ul>';
-        detalle.innerHTML = html;
-      }
-    })
-    .catch(error => {
-      estado.textContent = '❓';
-      detalle.innerHTML = '<p>Error carregant incidències.</p>';
-      console.error(`No s'ha pogut carregar incidències de ${font.nom}:`, error);
-    });
-
-  menu.addEventListener('click', () => {
-    const expanded = menu.getAttribute('aria-expanded') === 'true';
-    menu.setAttribute('aria-expanded', !expanded);
-    detalle.style.display = expanded ? 'none' : 'block';
-  });
-});
-
-// Tema toggle
-
-const btnTema = document.getElementById('btn-tema');
-
-function aplicarTema(tema) {
-  if (tema === 'oscuro') {
-    document.body.classList.add('tema-oscuro');
-    document.body.classList.remove('tema-claro');
-    btnTema.textContent = '☀️';
-  } else {
-    document.body.classList.add('tema-claro');
-    document.body.classList.remove('tema-oscuro');
-    btnTema.textContent = '🌙';
   }
-  localStorage.setItem('temaPreferido', tema);
-}
+</script>
 
-const temaGuardado = localStorage.getItem('temaPreferido');
-if (temaGuardado) {
-  aplicarTema(temaGuardado);
-} else {
-  const oscuroPref = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  aplicarTema(oscuroPref ? 'oscuro' : 'claro');
-}
-
-btnTema.addEventListener('click', () => {
-  if (document.body.classList.contains('tema-oscuro')) {
-    aplicarTema('claro');
-  } else {
-    aplicarTema('oscuro');
-  }
-});
-  </script>
 </body>
 </html>
