@@ -22,7 +22,7 @@ const coloresLineasTramAlacant = {
 const fonts = [
   {
     nom: 'Rodalia València',
-    url: 'https://www.renfe.com/content/renfe/es/es/grupo-renfe/comunicacion/renfe-al-dia/avisos/jcr:content/root/responsivegrid/rfincidentreports_co.noticeresults.json?noticetags=valencia',
+    url: 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.renfe.com/content/renfe/es/es/grupo-renfe/comunicacion/renfe-al-dia/avisos/jcr:content/root/responsivegrid/rfincidentreports_co.noticeresults.json?noticetags=valencia'),
     logo: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg',
     formatter: (incidencias) => {
       if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
@@ -132,14 +132,23 @@ fonts.forEach(font => {
       return res.json();
     })
     .then(data => {
-      if (!Array.isArray(data) || data.length === 0) {
+      let incidencias;
+      if (font.nom === 'Rodalia València') {
+        // Parseamos contenido JSON embebido de AllOrigins
+        const parsed = JSON.parse(data.contents);
+        incidencias = parsed || [];
+      } else {
+        incidencias = data;
+      }
+
+      if (!Array.isArray(incidencias) || incidencias.length === 0) {
         estado.textContent = '✅';
         detalle.innerHTML = '<p>No hi ha incidències.</p>';
       } else {
         estado.textContent = '⚠️';
         const html = font.formatter
-          ? font.formatter(data)
-          : '<ul>' + data.map(i => `<li>${i.texto_alerta}</li>`).join('') + '</ul>';
+          ? font.formatter(incidencias)
+          : '<ul>' + incidencias.map(i => `<li>${i.texto_alerta}</li>`).join('') + '</ul>';
         detalle.innerHTML = html;
       }
     })
@@ -173,13 +182,10 @@ function aplicarTema(tema) {
   localStorage.setItem('temaPreferido', tema);
 }
 
-// Al cargar, chequea preferencia
-
 const temaGuardado = localStorage.getItem('temaPreferido');
 if (temaGuardado) {
   aplicarTema(temaGuardado);
 } else {
-  // Si no, usa preferencia sistema
   const oscuroPref = window.matchMedia('(prefers-color-scheme: dark)').matches;
   aplicarTema(oscuroPref ? 'oscuro' : 'claro');
 }
