@@ -16,7 +16,10 @@ const fonts = [
   }
 ];
 
-const contenidor = document.getElementById('incidencies');
+const contenedor = document.getElementById('contenidor-incidencies');
+if (!contenedor) {
+  console.error('No se encontró el contenedor con id "contenidor-incidencies".');
+}
 
 fonts.forEach(font => {
   const bloc = document.createElement('div');
