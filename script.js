@@ -11,6 +11,14 @@ const colorsLineasMetroValencia = {
   "10": "#bad284"
 };
 
+const coloresLineasTramAlacant = {
+  "1": "#f03635",
+  "2": "#00953a",
+  "3": "#00953a",
+  "4": "#c29cc1",
+  "5": "#004f8e"
+};
+
 const fonts = [
   {
     nom: 'Rodalia València',
@@ -43,7 +51,23 @@ const fonts = [
     nom: 'TRAM d’Alacant',
     url: 'https://raw.githubusercontent.com/WireNext/TramAlicanteIncidencias/refs/heads/main/avisos_tramalacant.json',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/TRAM_-_Metropolitano_de_Alicante_-T-.svg'
-  }
+    formatter: (incidencias) => {
+      if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
+      return '<ul>' + incidencias.map(i => {
+        const lineas = (i.lineas_afectadas && i.lineas_afectadas.length > 0)
+          ? i.lineas_afectadas.map(linea => {
+              const num = linea.match(/\d+/)?.[0];
+              const color = coloresLineasTramAlacant[num] || getComputedStyle(document.body).getPropertyValue('--linea-default').trim();
+              return `<span class="linea-metro" style="background-color: ${color}">${num}</span>`;
+            }).join(' ')
+          : 'Sense línies afectades';
+        const texto = i.texto_alerta
+          .replace(/\n/g, '<br>')
+          .replace(/–/g, '– ')
+          .replace(/([.])(?=[^\s])/g, '. ');
+        return `<li>${lineas}<br>${texto}</li>`;
+      }).join('') + '</ul>';
+    }
 ];
 
 const contenedor = document.getElementById('contenidor-incidencies');
