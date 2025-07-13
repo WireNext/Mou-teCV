@@ -35,31 +35,82 @@ main {
   margin: auto;
 }
 
+/* Incidencia normal */
 .incidencia {
-  background-color: var(--card);
+  background-color: var(--bg);
   padding: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   border-left: 5px solid var(--accent);
+  border-radius: 4px;
   box-shadow: 0 0 5px rgba(0,0,0,0.2);
-  border-radius: 5px;
 }
 
 .incidencia.resuelta {
   border-left-color: var(--ok);
-  opacity: 0.75;
+  opacity: 0.7;
 }
 
+/* Titulos de fuentes */
 h2 {
   color: var(--warn);
   margin-top: 2rem;
   margin-bottom: 1rem;
 }
 
+/* Footer */
 footer {
   font-size: 0.9rem;
   border-top: 1px solid #333;
 }
+
 footer a {
   color: var(--accent);
   text-decoration: none;
+}
+
+/* NUEVO: menú transportes */
+
+.bloque-fuente {
+  margin-bottom: 1.5rem;
+}
+
+.menu-transport {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid #333;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  max-width: 600px;
+  margin-bottom: 0.5rem;
+  background-color: var(--card);
+}
+
+.menu-transport:focus {
+  outline: 2px solid var(--accent);
+}
+
+.logo-transport {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.estado-incidencias {
+  font-size: 1.5rem;
+  user-select: none;
+}
+
+.dropdown-text {
+  max-width: 600px;
+  padding: 0.5rem 1rem;
+  background-color: var(--card);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 1rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.3;
 }
