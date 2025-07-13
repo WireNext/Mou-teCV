@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Líneas de Transporte</title>
   <style>
+    :root {
+      --bloque-bg: #1e1e1e;
+      --bloque-border: #333;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -81,12 +86,14 @@
       color: white;
     }
 
-    .recorrido {
-      margin-top: 1rem;
-      background-color: #1e1e1e;
+    .bloque-fuente {
+      background: var(--bloque-bg);
+      border-radius: 8px;
+      box-shadow: 0 1px 5px rgb(0 0 0 / 0.1);
+      margin-top: 1.2em;
       padding: 1rem;
-      border-radius: 5px;
-      border: 1px solid #444;
+      border: 1px solid var(--bloque-border);
+      transition: background 0.3s, border-color 0.3s;
     }
 
     footer {
@@ -144,7 +151,7 @@
       <button style="background-color: #ff9900;" onclick="mostrarRecorrido('R8: Martorell - Granollers Centre')">R8</button>
     </div>
 
-    <div id="recorrido" class="recorrido" style="display: none;"></div>
+    <div id="recorrido" class="bloque-fuente" style="display: none;"></div>
   </div>
 
   <footer>
