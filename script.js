@@ -19,26 +19,44 @@ const coloresLineasTramAlacant = {
   "5": "#004f8e"
 };
 
+const coloresCercaniasValencia = {
+  "C1": "#4991c3",
+  "C2": "#ffb010",
+  "C3": "#97198b",
+  "C4": "#fe191b",
+  "C5": "#008925",
+  "C6": "#023286"
+};
+
 const fonts = [
   {
     nom: 'Rodalia València',
-    url: 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.renfe.com/content/renfe/es/es/grupo-renfe/comunicacion/renfe-al-dia/avisos/jcr:content/root/responsivegrid/rfincidentreports_co.noticeresults.json?noticetags=valencia'),
+    url: 'https://www.renfe.com/content/renfe/es/es/grupo-renfe/comunicacion/renfe-al-dia/avisos/jcr:content/root/responsivegrid/rfincidentreports_co.noticeresults.json?noticetags=valencia',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg',
     formatter: (incidencias) => {
+      const lineasValidas = ["C1", "C2", "C3", "C4", "C5", "C6"];
       if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
-      return '<ul>' + incidencias.map(i => {
-        const tags = (i.tags && i.tags.length > 0)
-          ? i.tags.map(t => `<span class="tag-aviso">${t.text}</span>`).join(' ')
-          : '';
+      const avisosFiltrats = incidencias.filter(i =>
+        i.tags?.some(t => lineasValidas.includes(t.text))
+      );
+      if (avisosFiltrats.length === 0) return 'No hi ha incidències en les línies C1-C6.';
+
+      return '<ul>' + avisosFiltrats.map(i => {
+        const lineas = i.tags
+          .filter(t => lineasValidas.includes(t.text))
+          .map(t => {
+            const color = coloresCercaniasValencia[t.text] || '#ccc';
+            return `<span class="linea-metro" style="background-color: ${color};">${t.text}</span>`;
+          }).join(' ');
         const texto = i.paragraph
           .replace(/\n/g, '<br>')
           .replace(/–/g, '– ')
           .replace(/([.])(?=[^\s])/g, '. ');
         const fecha = i.chipText ? `<small class="fecha-aviso">${i.chipText}</small>` : '';
         return `<li>
+                  ${lineas}<br>
                   <p>${texto}</p>
                   ${fecha}
-                  <p>${tags}</p>
                   <a href="${i.link}" target="${i.target || '_blank'}" rel="noopener noreferrer">Más info</a>
                 </li>`;
       }).join('') + '</ul>';
