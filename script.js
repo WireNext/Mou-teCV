@@ -22,8 +22,27 @@ const coloresLineasTramAlacant = {
 const fonts = [
   {
     nom: 'Rodalia València',
-    url: 'https://tuusuario.github.io/cercanias-valencia/incidencias.json',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg'
+    url: 'https://www.renfe.com/content/renfe/es/es/grupo-renfe/comunicacion/renfe-al-dia/avisos/jcr:content/root/responsivegrid/rfincidentreports_co.noticeresults.json?noticetags=valencia',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg',
+    formatter: (incidencias) => {
+      if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
+      return '<ul>' + incidencias.map(i => {
+        const tags = (i.tags && i.tags.length > 0)
+          ? i.tags.map(t => `<span class="tag-aviso">${t.text}</span>`).join(' ')
+          : '';
+        const texto = i.paragraph
+          .replace(/\n/g, '<br>')
+          .replace(/–/g, '– ')
+          .replace(/([.])(?=[^\s])/g, '. ');
+        const fecha = i.chipText ? `<small class="fecha-aviso">${i.chipText}</small>` : '';
+        return `<li>
+                  <p>${texto}</p>
+                  ${fecha}
+                  <p>${tags}</p>
+                  <a href="${i.link}" target="${i.target || '_blank'}" rel="noopener noreferrer">Más info</a>
+                </li>`;
+      }).join('') + '</ul>';
+    }
   },
   {
     nom: 'Metrovalencia',
