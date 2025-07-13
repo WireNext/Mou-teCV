@@ -85,3 +85,11 @@ main#contenidor-incidencies {
   min-width: 280px;
   box-sizing: border-box;
 }
+
+.detalle-incidencias {
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  font-size: 0.95em;
+  line-height: 1.4;
+}
+
