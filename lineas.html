@@ -14,82 +14,99 @@
 
     header {
       background-color: #1f1f1f;
-      padding: 1rem 2rem;
+      padding: 1.2rem 2rem;
       text-align: center;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: bold;
-      color: #fff;
-      box-shadow: 0 0 10px #000;
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+      letter-spacing: 0.5px;
     }
 
     main {
       padding: 2rem;
+      max-width: 800px;
+      margin: auto;
     }
 
     footer {
       margin-top: 3rem;
       padding: 1rem 2rem;
       background-color: #1f1f1f;
-      color: #aaa;
+      color: #999;
       text-align: center;
       font-size: 0.9rem;
-      box-shadow: 0 -2px 10px #000;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.7);
     }
 
     .bloque-fuente {
       background-color: #1e1e1e;
-      margin: 1rem 0;
-      border-radius: 12px;
+      margin: 1.5rem 0;
+      border-radius: 14px;
       padding: 1rem;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+      transition: background-color 0.3s;
     }
 
     .menu-transport {
       display: flex;
       align-items: center;
       cursor: pointer;
+      gap: 1rem;
     }
 
     .logo-transport {
-      width: 40px;
-      height: 40px;
-      margin-right: 1rem;
-      border-radius: 6px;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background-color: #fff;
+      padding: 4px;
     }
 
     .nombre-operador {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: bold;
+      color: #fff;
     }
 
     .submenu-lineas {
       display: none;
-      margin-top: 10px;
-      padding-left: 1rem;
+      margin-top: 1rem;
+      padding-left: 0.5rem;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .submenu-lineas button {
       display: block;
-      margin: 6px 0;
-      padding: 8px 14px;
+      margin: 8px 0;
+      padding: 0.6rem 1rem;
       border: none;
       color: white;
-      font-weight: bold;
+      font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
+      width: 100%;
       text-align: left;
-      transition: background-color 0.3s;
-    }
-
-    .info-recorrido {
-      margin-top: 6px;
-      padding-left: 1rem;
-      font-size: 0.95rem;
-      color: #ccc;
+      transition: opacity 0.2s;
     }
 
     .submenu-lineas button:hover {
       opacity: 0.85;
+    }
+
+    .info-recorrido {
+      margin-top: 6px;
+      padding: 0.5rem 1rem;
+      background-color: #2a2a2a;
+      border-left: 4px solid #666;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      color: #ccc;
     }
   </style>
 </head>
