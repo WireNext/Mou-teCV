@@ -77,7 +77,7 @@ fonts.forEach(font => {
       }
     })
     .catch(error => {
-      estado.textContent = '⚠️';
+      estado.textContent = '❓';
       detalle.textContent = 'Error carregant incidències.';
       console.error(`No s'ha pogut carregar incidències de ${font.nom}:`, error);
     });
