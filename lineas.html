@@ -3,50 +3,154 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Transporte desplegable con imágenes y logos</title>
+<title>Transporte público desplegable - Tema oscuro</title>
 <style>
+  /* Reset y base */
+  * {
+    box-sizing: border-box;
+  }
   body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
   }
   h1 {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
+    font-weight: 700;
   }
-  h2 {
-    border-bottom: 2px solid #333;
-    padding-bottom: 5px;
+  /* Contenedor principal */
+  .transporte {
+    max-width: 600px;
+    margin: 0 auto 30px auto;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #1e1e1e;
+    box-shadow: 0 0 10px rgba(0,0,0,0.7);
+  }
+  /* Sección principal desplegable */
+  .seccion-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-  }
-  h2 img {
-    height: 30px;
-    width: auto;
-  }
-  .transporte {
-    margin-bottom: 30px;
-  }
-  .linea {
+    gap: 12px;
+    padding: 15px 20px;
     cursor: pointer;
-    background-color: #eee;
-    padding: 10px 15px;
-    margin: 5px 0;
-    font-weight: bold;
-    border-radius: 5px;
     user-select: none;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-bottom: 1px solid #333;
     transition: background-color 0.3s ease;
   }
-  .linea:hover {
-    background-color: #ddd;
+  .seccion-header:hover {
+    background-color: #333;
   }
-  .imagen {
-    display: none;
-    margin: 10px 30px;
+  .seccion-header img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+  }
+  /* Contenido desplegable (líneas) */
+  .lineas-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+  .lineas-container.open {
+    max-height: 1000px;
+  }
+  /* Cada línea (desplegable) */
+  .linea {
+    border-top: 1px solid #2a2a2a;
+  }
+  .linea-header {
+    padding: 12px 25px;
+    cursor: pointer;
+    background-color: #2a2a2a;
+    user-select: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+  .linea-header:hover {
+    background-color: #444;
+  }
+  /* Colores por línea */
+  .metro-l1 {
+    color: #d32f2f; /* rojo Metrovalencia Línea 1 */
+  }
+  .metro-l2 {
+    color: #388e3c; /* verde Metrovalencia Línea 2 */
+  }
+  .metro-l3 {
+    color: #1976d2; /* azul Metrovalencia Línea 3 */
+  }
+  .tram-l1 {
+    color: #f57c00; /* naranja Tram Alicante Línea 1 */
+  }
+  .tram-l2 {
+    color: #7b1fa2; /* morado Tram Alicante Línea 2 */
+  }
+  .cerc-l1 {
+    color: #005daa; /* azul Renfe Cercanías C-1 */
+  }
+  .cerc-l2 {
+    color: #009640; /* verde Renfe Cercanías C-2 */
+  }
+  /* Imagen dentro de línea desplegable */
+  .imagen-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+    padding-left: 25px;
+    background-color: #222;
+    border-top: 1px solid #333;
+  }
+  .imagen-container.open {
+    max-height: 500px;
+    padding: 10px 25px;
+  }
+  .imagen-container img {
+    width: 100%;
     max-width: 400px;
-    border: 1px solid #ccc;
     border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0,0,0,0.7);
+    display: block;
+    margin: 0 auto;
+  }
+  /* Ícono de desplegable (flecha) */
+  .seccion-header::after,
+  .linea-header::after {
+    content: "▶";
+    margin-left: auto;
+    transition: transform 0.3s ease;
+    color: #ccc;
+  }
+  .seccion-header.open::after,
+  .linea-header.open::after {
+    transform: rotate(90deg);
+    color: #fff;
+  }
+
+  /* Responsive para móviles */
+  @media (max-width: 480px) {
+    body {
+      padding: 15px 10px;
+    }
+    .transporte {
+      max-width: 100%;
+    }
+    .seccion-header {
+      font-size: 1.1rem;
+      padding: 12px 15px;
+    }
+    .linea-header {
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+    .imagen-container img {
+      max-width: 100%;
+    }
   }
 </style>
 </head>
@@ -54,52 +158,113 @@
 
 <h1>Transporte público: Líneas desplegables</h1>
 
+<!-- Metrovalencia -->
 <div class="transporte" id="metrovalencia">
-  <h2>
+  <div class="seccion-header" onclick="toggleSeccion(this)">
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Metrovalencia_logo.svg/120px-Metrovalencia_logo.svg.png" alt="Logo Metrovalencia" />
     Metrovalencia
-  </h2>
-  <div class="linea" onclick="toggleImagen('mv1')">Línea 1</div>
-  <img id="mv1" class="imagen" src="https://via.placeholder.com/400x200?text=Metrovalencia+Línea+1" alt="Metrovalencia Línea 1" />
-
-  <div class="linea" onclick="toggleImagen('mv2')">Línea 2</div>
-  <img id="mv2" class="imagen" src="https://via.placeholder.com/400x200?text=Metrovalencia+Línea+2" alt="Metrovalencia Línea 2" />
-
-  <div class="linea" onclick="toggleImagen('mv3')">Línea 3</div>
-  <img id="mv3" class="imagen" src="https://via.placeholder.com/400x200?text=Metrovalencia+Línea+3" alt="Metrovalencia Línea 3" />
+  </div>
+  <div class="lineas-container">
+    <div class="linea">
+      <div class="linea-header metro-l1" onclick="toggleLinea(this)">Línea 1</div>
+      <div class="imagen-container">
+        <img src="https://via.placeholder.com/400x200?text=Metrovalencia+Línea+1" alt="Metrovalencia Línea 1" />
+      </div>
+    </div>
+    <div class="linea">
+      <div class="linea-header metro-l2" onclick="toggleLinea(this)">Línea 2</div>
+      <div class="imagen-container">
+        <img src="https://via.placeholder.com/400x200?text=Metrovalencia+Línea+2" alt="Metrovalencia Línea 2" />
+      </div>
+    </div>
+    <div class="linea">
+      <div class="linea-header metro-l3" onclick="toggleLinea(this)">Línea 3</div>
+      <div class="imagen-container">
+        <img src="https://via.placeholder.com/400x200?text=Metrovalencia+Línea+3" alt="Metrovalencia Línea 3" />
+      </div>
+    </div>
+  </div>
 </div>
 
+<!-- Tram Alicante -->
 <div class="transporte" id="tramalicante">
-  <h2>
+  <div class="seccion-header" onclick="toggleSeccion(this)">
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Tram_alicante_logo.svg/120px-Tram_alicante_logo.svg.png" alt="Logo Tram Alicante" />
     Tram de Alicante
-  </h2>
-  <div class="linea" onclick="toggleImagen('ta1')">Línea 1</div>
-  <img id="ta1" class="imagen" src="https://via.placeholder.com/400x200?text=Tram+Alicante+Línea+1" alt="Tram Alicante Línea 1" />
-
-  <div class="linea" onclick="toggleImagen('ta2')">Línea 2</div>
-  <img id="ta2" class="imagen" src="https://via.placeholder.com/400x200?text=Tram+Alicante+Línea+2" alt="Tram Alicante Línea 2" />
+  </div>
+  <div class="lineas-container">
+    <div class="linea">
+      <div class="linea-header tram-l1" onclick="toggleLinea(this)">Línea 1</div>
+      <div class="imagen-container">
+        <img src="https://via.placeholder.com/400x200?text=Tram+Alicante+Línea+1" alt="Tram Alicante Línea 1" />
+      </div>
+    </div>
+    <div class="linea">
+      <div class="linea-header tram-l2" onclick="toggleLinea(this)">Línea 2</div>
+      <div class="imagen-container">
+        <img src="https://via.placeholder.com/400x200?text=Tram+Alicante+Línea+2" alt="Tram Alicante Línea 2" />
+      </div>
+    </div>
+  </div>
 </div>
 
+<!-- Cercanías -->
 <div class="transporte" id="cercanias">
-  <h2>
+  <div class="seccion-header" onclick="toggleSeccion(this)">
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Renfe_Cercan%C3%ADas_logo.svg/120px-Renfe_Cercan%C3%ADas_logo.svg.png" alt="Logo Cercanías" />
     Cercanías
-  </h2>
-  <div class="linea" onclick="toggleImagen('ce1')">Línea C-1</div>
-  <img id="ce1" class="imagen" src="https://via.placeholder.com/400x200?text=Cercanías+Línea+C-1" alt="Cercanías Línea C-1" />
-
-  <div class="linea" onclick="toggleImagen('ce2')">Línea C-2</div>
-  <img id="ce2" class="imagen" src="https://via.placeholder.com/400x200?text=Cercanías+Línea+C-2" alt="Cercanías Línea C-2" />
+  </div>
+  <div class="lineas-container">
+    <div class="linea">
+      <div class="linea-header cerc-l1" onclick="toggleLinea(this)">Línea C-1</div>
+      <div class="imagen-container">
+        <img src="https://via.placeholder.com/400x200?text=Cercanías+Línea+C-1" alt="Cercanías Línea C-1" />
+      </div>
+    </div>
+    <div class="linea">
+      <div class="linea-header cerc-l2" onclick="toggleLinea(this)">Línea C-2</div>
+      <div class="imagen-container">
+        <img src="https://via.placeholder.com/400x200?text=Cercanías+Línea+C-2" alt="Cercanías Línea C-2" />
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-  function toggleImagen(id) {
-    const img = document.getElementById(id);
-    if (img.style.display === "block") {
-      img.style.display = "none";
+  // Función para abrir/cerrar sección principal
+  function toggleSeccion(elem) {
+    const container = elem.nextElementSibling;
+    const isOpen = container.classList.contains('open');
+    if (isOpen) {
+      container.classList.remove('open');
+      elem.classList.remove('open');
+      // Cerrar todas las líneas dentro
+      container.querySelectorAll('.linea-header.open').forEach(linea => {
+        linea.classList.remove('open');
+        linea.nextElementSibling.classList.remove('open');
+      });
     } else {
-      img.style.display = "block";
+      container.classList.add('open');
+      elem.classList.add('open');
+    }
+  }
+
+  // Función para abrir/cerrar línea desplegable, cierra otras líneas dentro de la misma sección
+  function toggleLinea(elem) {
+    const container = elem.nextElementSibling;
+    const parentLineas = elem.closest('.lineas-container');
+    const isOpen = container.classList.contains('open');
+    if (isOpen) {
+      container.classList.remove('open');
+      elem.classList.remove('open');
+    } else {
+      // Cerrar otras líneas abiertas dentro de la misma sección
+      parentLineas.querySelectorAll('.linea-header.open').forEach(linea => {
+        linea.classList.remove('open');
+        linea.nextElementSibling.classList.remove('open');
+      });
+      container.classList.add('open');
+      elem.classList.add('open');
     }
   }
 </script>
