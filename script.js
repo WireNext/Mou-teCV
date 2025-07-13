@@ -2,7 +2,7 @@ const fonts = [
   {
     nom: 'Rodalia València',
     url: 'https://tuusuario.github.io/cercanias-valencia/incidencias.json',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/6/65/Rodalies_de_Catalunya_logo.svg' // pon aquí el logo adecuado
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/6/65/Rodalies_de_Catalunya_logo.svg'
   },
   {
     nom: 'Metrovalencia',
@@ -12,7 +12,7 @@ const fonts = [
   {
     nom: 'TRAM d’Alacant',
     url: 'https://tuusuario.github.io/tram-alacant/incidencias.json',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/9/9f/Logo_TRAM_Alicante.svg' // ejemplo
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/9/9f/Logo_TRAM_Alicante.svg'
   }
 ];
 
