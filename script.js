@@ -1,15 +1,18 @@
 const fonts = [
   {
+    nom: 'Rodalia València',
+    url: 'https://tuusuario.github.io/cercanias-valencia/incidencias.json',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg'
+  },
+  {
     nom: 'Metrovalencia',
-    url: 'https://emtvalencia.github.io/incidencies/metrovalencia.json'
+    url: 'https://raw.githubusercontent.com/WireNext/MetroValenciaIncidencias/refs/heads/main/avisos_metrovalencia.json',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Isotip_de_Metroval%C3%A8ncia.svg'
   },
   {
     nom: 'TRAM d’Alacant',
-    url: 'https://emtvalencia.github.io/incidencies/tram.json'
-  },
-  {
-    nom: 'Rodalia València',
-    url: 'https://emtvalencia.github.io/incidencies/renfe.json'
+    url: 'https://raw.githubusercontent.com/WireNext/TramAlicanteIncidencias/refs/heads/main/avisos_tramalacant.json',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/TRAM_-_Metropolitano_de_Alicante_-T-.svg'
   }
 ];
 
