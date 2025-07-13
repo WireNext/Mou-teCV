@@ -17,6 +17,9 @@ const fonts = [
 ];
 
 const contenedor = document.getElementById('contenidor-incidencies');
+if (!contenedor) {
+  console.error('No se encontró el contenedor con id "contenidor-incidencies".');
+}
 
 fonts.forEach(font => {
   const bloqueFuente = document.createElement('section');
@@ -40,6 +43,9 @@ fonts.forEach(font => {
   const detalle = document.createElement('div');
   detalle.className = 'detalle-incidencias';
   detalle.style.display = 'none'; // oculto inicialmente
+  detalle.style.padding = '0.5em 1em';
+  detalle.style.border = '1px solid #ccc';
+  detalle.style.marginTop = '0.5em';
 
   menu.appendChild(imgLogo);
   menu.appendChild(estado);
@@ -60,7 +66,6 @@ fonts.forEach(font => {
         detalle.textContent = 'No hi ha incidències.';
       } else {
         estado.textContent = '⚠️'; // con incidencias
-        // Ajusta según la estructura real de tu JSON
         detalle.innerHTML = '<ul>' + data.map(incidencia => `<li>${incidencia.descripcio || incidencia.titulo || incidencia.mensaje || 'Incidència'}</li>`).join('') + '</ul>';
       }
     })
@@ -71,6 +76,7 @@ fonts.forEach(font => {
     });
 
   menu.addEventListener('click', () => {
+    console.log(`Click en ${font.nom}`); // debug
     const expanded = menu.getAttribute('aria-expanded') === 'true';
     menu.setAttribute('aria-expanded', !expanded);
     detalle.style.display = expanded ? 'none' : 'block';
