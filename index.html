@@ -6,97 +6,16 @@
   <title>Mou-te</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/png" href="Logo MouTeCV.png" />
-  <style>
-    .linea-badge {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      line-height: 24px;
-      margin-right: 6px;
-      border-radius: 4px;
-      color: white;
-      font-weight: bold;
-      text-align: center;
-      font-family: Arial, sans-serif;
-      user-select: none;
-    }
-    .aviso {
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #ccc;
-    }
-  </style>
 </head>
 <body>
   <header>
-    <!--<img src="Logo MouTeCV.png" alt="Logotip Mou-te CV" class="logo" />-->
     <h1>🚦 Mou-te CV</h1>
     <p>Informació en temps real de Rodalia, Metrovalencia i TRAM d’Alacant</p>
   </header>
-  
-  <main id="contenidor-incidencies">
-    <!-- Aquí se mostrarán las alertas -->
-  </main>
-  
+  <main id="contenidor-incidencies"></main>
   <footer>
     <p>Desenvolupat per <a href="https://github.com/WireNext" target="_blank">wirennext</a></p>
   </footer>
-  
-  <script>
-    const colorsLineasMetroValencia = {
-      1: '#e3ad42',
-      2: '#d1438c',
-      3: '#c42438',
-      4: '#054f8b',
-      5: '#008c61',
-      6: '#8466a9',
-      7: '#db8a35',
-      8: '#2db4ca',
-      9: '#a37750',
-      10: '#bad284'
-    };
-
-    async function carregarAvisos() {
-      const contenidor = document.getElementById('contenidor-incidencies');
-      const urlJSON = 'https://raw.githubusercontent.com/usuario/repositorio/rama/ruta/avisos_metrovalencia.json'; // Cambia por la URL real
-
-      try {
-        const response = await fetch(urlJSON);
-        if (!response.ok) throw new Error('Error al carregar les dades');
-        const avisos = await response.json();
-
-        if (avisos.length === 0) {
-          contenidor.innerHTML = '<p>No hi ha avisos de moment.</p>';
-          return;
-        }
-
-        contenidor.innerHTML = ''; // Vaciar contenido previo
-
-        avisos.forEach(aviso => {
-          const divAviso = document.createElement('div');
-          divAviso.classList.add('aviso');
-
-          const badges = aviso.lineas_afectadas.length > 0 ? aviso.lineas_afectadas.map(linea => {
-            const numero = linea.match(/\d+/);
-            if (!numero) return '';
-            const num = numero[0];
-            const color = colorsLineasMetroValencia[num] || '#999';
-            return `<span class="linea-badge" style="background-color: ${color}">${num}</span>`;
-          }).join(' ') : 'Sense línies afectades';
-
-          divAviso.innerHTML = `
-            <div>Línies afectades: ${badges}</div>
-            <p>${aviso.texto_alerta}</p>
-          `;
-
-          contenidor.appendChild(divAviso);
-        });
-      } catch (error) {
-        contenidor.innerHTML = `<p>Error carregant avisos: ${error.message}</p>`;
-      }
-    }
-
-    carregarAvisos();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
