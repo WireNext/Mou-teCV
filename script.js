@@ -2,7 +2,7 @@ const fonts = [
   {
     nom: 'Rodalia València',
     url: 'https://tuusuario.github.io/cercanias-valencia/incidencias.json',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Cercanias_Logo.svg'
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg'
   },
   {
     nom: 'Metrovalencia',
