@@ -101,3 +101,16 @@ footer a {
   color: var(--accent);
   text-decoration: none;
 }
+
+.linea-metro {
+  display: inline-block;
+  min-width: 22px;
+  padding: 4px 6px;
+  margin: 2px 4px 2px 0;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.85em;
+  color: white;
+  text-align: center;
+  background-color: #666;
+}
