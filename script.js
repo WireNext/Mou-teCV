@@ -25,6 +25,16 @@ fonts.forEach(font => {
   const bloc = document.createElement('div');
   bloc.classList.add('font-bloc');
 
+  // Añadir logo si existe
+  if (font.logo) {
+    const img = document.createElement('img');
+    img.src = font.logo;
+    img.alt = `${font.nom} logo`;
+    img.style.width = '40px';
+    img.style.marginBottom = '0.5rem';
+    bloc.appendChild(img);
+  }
+  
   const titol = document.createElement('h3');
   titol.textContent = font.nom;
   bloc.appendChild(titol);
