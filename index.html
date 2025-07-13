@@ -6,6 +6,26 @@
   <title>Mou-te</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/png" href="Logo MouTeCV.png" />
+  <style>
+    .linea-badge {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      margin-right: 6px;
+      border-radius: 4px;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      user-select: none;
+    }
+    .aviso {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #ccc;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -23,9 +43,22 @@
   </footer>
   
   <script>
+    const colorsLineasMetroValencia = {
+      1: '#e3ad42',
+      2: '#d1438c',
+      3: '#c42438',
+      4: '#054f8b',
+      5: '#008c61',
+      6: '#8466a9',
+      7: '#db8a35',
+      8: '#2db4ca',
+      9: '#a37750',
+      10: '#bad284'
+    };
+
     async function carregarAvisos() {
       const contenidor = document.getElementById('contenidor-incidencies');
-      const urlJSON = 'https://raw.githubusercontent.com/WireNext/MetroValenciaIncidencias/refs/heads/main/avisos_metrovalencia.json';
+      const urlJSON = 'https://raw.githubusercontent.com/usuario/repositorio/rama/ruta/avisos_metrovalencia.json'; // Cambia por la URL real
 
       try {
         const response = await fetch(urlJSON);
@@ -43,13 +76,17 @@
           const divAviso = document.createElement('div');
           divAviso.classList.add('aviso');
 
-          // Líneas afectadas
-          let liniesText = aviso.lineas_afectadas.length > 0 ? aviso.lineas_afectadas.join(', ') : 'Sense línies afectades';
+          const badges = aviso.lineas_afectadas.length > 0 ? aviso.lineas_afectadas.map(linea => {
+            const numero = linea.match(/\d+/);
+            if (!numero) return '';
+            const num = numero[0];
+            const color = colorsLineasMetroValencia[num] || '#999';
+            return `<span class="linea-badge" style="background-color: ${color}">${num}</span>`;
+          }).join(' ') : 'Sense línies afectades';
 
           divAviso.innerHTML = `
-            <h3>Línies afectades: ${liniesText}</h3>
+            <div>Línies afectades: ${badges}</div>
             <p>${aviso.texto_alerta}</p>
-            <hr />
           `;
 
           contenidor.appendChild(divAviso);
