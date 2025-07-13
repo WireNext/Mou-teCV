@@ -7,7 +7,14 @@ const fonts = [
   {
     nom: 'Metrovalencia',
     url: 'https://raw.githubusercontent.com/WireNext/MetroValenciaIncidencias/refs/heads/main/avisos_metrovalencia.json',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Isotip_de_Metroval%C3%A8ncia.svg'
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Isotip_de_Metroval%C3%A8ncia.svg',
+    formatter: (incidencias) => {
+      if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
+      return '<ul>' + incidencias.map(i => {
+        const lineas = (i.lineas_afectadas && i.lineas_afectadas.length > 0) ? i.lineas_afectadas.join(', ') : 'Sense línies afectades';
+        return `<li><strong>Línies afectades:</strong> ${lineas}<br>${i.texto_alerta}</li>`;
+      }).join('') + '</ul>';
+    }
   },
   {
     nom: 'TRAM d’Alacant',
