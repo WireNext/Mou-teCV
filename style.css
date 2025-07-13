@@ -71,3 +71,17 @@ footer a {
   color: var(--accent);
   text-decoration: none;
 }
+
+main#contenidor-incidencies {
+  display: flex;
+  gap: 1rem;       /* espacio entre bloques */
+  justify-content: center; /* opcional, para centrar los bloques */
+  flex-wrap: wrap; /* para que si no caben, se bajen a otra fila */
+}
+
+.bloque-fuente {
+  flex: 1 1 280px; /* crecer, encoger, ancho base 280px */
+  max-width: 320px;
+  min-width: 280px;
+  box-sizing: border-box;
+}
