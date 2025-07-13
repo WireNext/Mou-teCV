@@ -9,14 +9,57 @@
 </head>
 <body>
   <header>
-   <!-- <img src="Logo MouTeCV.png" alt="Logotip Mou-te CV" class="logo" /> -->
+    <!--<img src="Logo MouTeCV.png" alt="Logotip Mou-te CV" class="logo" />-->
     <h1>🚦 Mou-te CV</h1>
     <p>Informació en temps real de Rodalia, Metrovalencia i TRAM d’Alacant</p>
   </header>
-  <main id="contenidor-incidencies"></main>
+  
+  <main id="contenidor-incidencies">
+    <!-- Aquí se mostrarán las alertas -->
+  </main>
+  
   <footer>
     <p>Desenvolupat per <a href="https://github.com/WireNext" target="_blank">wirennext</a></p>
   </footer>
-  <script src="script.js"></script>
+  
+  <script>
+    async function carregarAvisos() {
+      const contenidor = document.getElementById('contenidor-incidencies');
+      const urlJSON = 'https://raw.githubusercontent.com/WireNext/MetroValenciaIncidencias/refs/heads/main/avisos_metrovalencia.json';
+
+      try {
+        const response = await fetch(urlJSON);
+        if (!response.ok) throw new Error('Error al carregar les dades');
+        const avisos = await response.json();
+
+        if (avisos.length === 0) {
+          contenidor.innerHTML = '<p>No hi ha avisos de moment.</p>';
+          return;
+        }
+
+        contenidor.innerHTML = ''; // Vaciar contenido previo
+
+        avisos.forEach(aviso => {
+          const divAviso = document.createElement('div');
+          divAviso.classList.add('aviso');
+
+          // Líneas afectadas
+          let liniesText = aviso.lineas_afectadas.length > 0 ? aviso.lineas_afectadas.join(', ') : 'Sense línies afectades';
+
+          divAviso.innerHTML = `
+            <h3>Línies afectades: ${liniesText}</h3>
+            <p>${aviso.texto_alerta}</p>
+            <hr />
+          `;
+
+          contenidor.appendChild(divAviso);
+        });
+      } catch (error) {
+        contenidor.innerHTML = `<p>Error carregant avisos: ${error.message}</p>`;
+      }
+    }
+
+    carregarAvisos();
+  </script>
 </body>
 </html>
