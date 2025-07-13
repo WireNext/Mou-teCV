@@ -50,7 +50,7 @@ const fonts = [
   {
     nom: 'TRAM d’Alacant',
     url: 'https://raw.githubusercontent.com/WireNext/TramAlicanteIncidencias/refs/heads/main/avisos_tramalacant.json',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/TRAM_-_Metropolitano_de_Alicante_-T-.svg'
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/TRAM_-_Metropolitano_de_Alicante_-T-.svg',
     formatter: (incidencias) => {
       if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
       return '<ul>' + incidencias.map(i => {
