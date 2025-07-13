@@ -23,7 +23,6 @@ const fonts = [
     logo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Isotip_de_Metroval%C3%A8ncia.svg',
     formatter: (incidencias) => {
       if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
-
       return '<ul>' + incidencias.map(i => {
         const lineas = (i.lineas_afectadas && i.lineas_afectadas.length > 0)
           ? i.lineas_afectadas.map(linea => {
@@ -32,12 +31,10 @@ const fonts = [
               return `<span class="linea-metro" style="background-color: ${color}">${num}</span>`;
             }).join(' ')
           : 'Sense línies afectades';
-
         const texto = i.texto_alerta
           .replace(/\n/g, '<br>')
           .replace(/–/g, '– ')
           .replace(/([.])(?=[^\s])/g, '. ');
-
         return `<li>${lineas}<br>${texto}</li>`;
       }).join('') + '</ul>';
     }
@@ -69,24 +66,19 @@ fonts.forEach(font => {
   imgLogo.alt = `${font.nom} Logo`;
   imgLogo.className = 'logo-transport';
 
+  const nombreOperador = document.createElement('div');
+  nombreOperador.className = 'nombre-operador';
+  nombreOperador.textContent = font.nom;
+
   const estado = document.createElement('span');
   estado.className = 'estado-incidencias';
   estado.textContent = '⏳';
 
   const detalle = document.createElement('div');
   detalle.className = 'detalle-incidencias';
-  detalle.style.display = 'none';
-  detalle.style.padding = '0.5em 1em';
-  detalle.style.border = '1px solid #ccc';
-  detalle.style.marginTop = '0.5em';
-
-  // 🔹 Agregamos el nombre del operador al inicio del detalle
-  const nombreOperador = document.createElement('div');
-  nombreOperador.className = 'nombre-operador';
-  nombreOperador.textContent = font.nom;
-  detalle.appendChild(nombreOperador);
 
   menu.appendChild(imgLogo);
+  menu.appendChild(nombreOperador);
   menu.appendChild(estado);
 
   bloqueFuente.appendChild(menu);
@@ -101,23 +93,22 @@ fonts.forEach(font => {
     .then(data => {
       if (!Array.isArray(data) || data.length === 0) {
         estado.textContent = '✅';
-        detalle.innerHTML += '<p>No hi ha incidències.</p>';
+        detalle.innerHTML = '<p>No hi ha incidències.</p>';
       } else {
         estado.textContent = '⚠️';
         const html = font.formatter
           ? font.formatter(data)
           : '<ul>' + data.map(i => `<li>${i.texto_alerta}</li>`).join('') + '</ul>';
-        detalle.innerHTML += html;
+        detalle.innerHTML = html;
       }
     })
     .catch(error => {
       estado.textContent = '❓';
-      detalle.innerHTML += '<p>Error carregant incidències.</p>';
+      detalle.innerHTML = '<p>Error carregant incidències.</p>';
       console.error(`No s'ha pogut carregar incidències de ${font.nom}:`, error);
     });
 
-  // 🔹 Solo se despliega al hacer clic en el logo
-  imgLogo.addEventListener('click', () => {
+  menu.addEventListener('click', () => {
     const expanded = menu.getAttribute('aria-expanded') === 'true';
     menu.setAttribute('aria-expanded', !expanded);
     detalle.style.display = expanded ? 'none' : 'block';
