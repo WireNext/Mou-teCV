@@ -1,0 +1,65 @@
+:root {
+  --bg: #121212;
+  --card: #1e1e1e;
+  --text: #e0e0e0;
+  --accent: #ff5252;
+  --ok: #4caf50;
+  --warn: #ff9800;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header, footer {
+  text-align: center;
+  padding: 1rem;
+  background: #181818;
+  border-bottom: 1px solid #333;
+}
+
+header h1 {
+  margin: 0.2em 0;
+}
+
+main {
+  flex: 1;
+  padding: 2rem;
+  max-width: 900px;
+  margin: auto;
+}
+
+.incidencia {
+  background-color: var(--card);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-left: 5px solid var(--accent);
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+.incidencia.resuelta {
+  border-left-color: var(--ok);
+  opacity: 0.75;
+}
+
+h2 {
+  color: var(--warn);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+footer {
+  font-size: 0.9rem;
+  border-top: 1px solid #333;
+}
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
