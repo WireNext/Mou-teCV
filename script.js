@@ -6,7 +6,7 @@ const fonts = [
   },
   {
     nom: 'Metrovalencia',
-    url: 'https://raw.githubusercontent.com/WireNext/MetroValenciaIncidencias/main/avisos_metrovalencia.json',
+    url: 'https://raw.githubusercontent.com/WireNext/MetroValenciaIncidencias/refs/heads/main/avisos_metrovalencia.json',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Isotip_de_Metroval%C3%A8ncia.svg'
   },
   {
