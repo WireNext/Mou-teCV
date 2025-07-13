@@ -1,3 +1,16 @@
+const colorsLineasMetroValencia = {
+  "1": "#e3ad42",
+  "2": "#d1438c",
+  "3": "#c42438",
+  "4": "#054f8b",
+  "5": "#008c61",
+  "6": "#8466a9",
+  "7": "#db8a35",
+  "8": "#2db4ca",
+  "9": "#a37750",
+  "10": "#bad284"
+};
+
 const fonts = [
   {
     nom: 'Rodalia València',
@@ -10,18 +23,22 @@ const fonts = [
     logo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Isotip_de_Metroval%C3%A8ncia.svg',
     formatter: (incidencias) => {
       if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
+
       return '<ul>' + incidencias.map(i => {
         const lineas = (i.lineas_afectadas && i.lineas_afectadas.length > 0)
-          ? i.lineas_afectadas.join(', ')
+          ? i.lineas_afectadas.map(linea => {
+              const num = linea.match(/\d+/)?.[0];
+              const color = colorsLineasMetroValencia[num] || '#666';
+              return `<span class="linea-metro" style="background-color: ${color}">${num}</span>`;
+            }).join(' ')
           : 'Sense línies afectades';
 
-        // Mejorar legibilidad del texto de la alerta
         const texto = i.texto_alerta
-          .replace(/\n/g, '<br>') // si hubiese saltos de línea reales
-          .replace(/–/g, '– ') // guiones largos con espacio
-          .replace(/([.])(?=[^\s])/g, '. '); // punto seguido sin espacio
+          .replace(/\n/g, '<br>')
+          .replace(/–/g, '– ')
+          .replace(/([.])(?=[^\s])/g, '. ');
 
-        return `<li><strong>Línies afectades:</strong> ${lineas}<br>${texto}</li>`;
+        return `<li>${lineas}<br>${texto}</li>`;
       }).join('') + '</ul>';
     }
   },
@@ -54,7 +71,7 @@ fonts.forEach(font => {
 
   const estado = document.createElement('span');
   estado.className = 'estado-incidencias';
-  estado.textContent = '⏳'; // Cargando...
+  estado.textContent = '⏳';
 
   const detalle = document.createElement('div');
   detalle.className = 'detalle-incidencias';
@@ -82,11 +99,8 @@ fonts.forEach(font => {
         detalle.textContent = 'No hi ha incidències.';
       } else {
         estado.textContent = '⚠️';
-        if (font.formatter) {
-          detalle.innerHTML = font.formatter(data);
-        } else {
-          detalle.innerHTML = '<ul>' + data.map(i => `<li>${i.texto_alerta}</li>`).join('') + '</ul>';
-        }
+        detalle.innerHTML = font.formatter ? font.formatter(data)
+                                           : '<ul>' + data.map(i => `<li>${i.texto_alerta}</li>`).join('') + '</ul>';
       }
     })
     .catch(error => {
