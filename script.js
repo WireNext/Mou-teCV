@@ -73,7 +73,7 @@ fonts.forEach(font => {
         detalle.textContent = 'No hi ha incidències.';
       } else {
         estado.textContent = '⚠️'; // con incidencias
-        detalle.innerHTML = '<ul>' + data.map(incidencia => `<li>${incidencia.descripcio || incidencia.titulo || incidencia.mensaje || 'Incidència'}</li>`).join('') + '</ul>';
+        detalle.innerHTML = font.formatter(data);
       }
     })
     .catch(error => {
