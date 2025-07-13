@@ -1,1 +1,168 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <title>Línies de Transport</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .submenu-lineas {
+      display: none;
+      margin-top: 10px;
+      padding-left: 1rem;
+    }
 
+    .submenu-lineas button {
+      display: block;
+      margin: 5px 0;
+      padding: 6px 12px;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .info-recorrido {
+      margin-top: 4px;
+      padding-left: 1rem;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <main id="contenidor-lineas"></main>
+
+  <script>
+    const coloresMetrovalencia = {
+      '1': '#E3051A',
+      '2': '#009ADA',
+      '3': '#008751',
+      '4': '#FFD503',
+      '5': '#E76DAD',
+      '6': '#00BFB3',
+      '7': '#B5437A',
+      '8': '#DA9600',
+      '9': '#AC703A',
+      '10': '#ED6C00'
+    };
+
+    const coloresTram = {
+      '1': '#004B9B',
+      '2': '#F5821F',
+      '3': '#9E1F63',
+      '4': '#64A70B',
+      '5': '#A31E2D'
+    };
+
+    const coloresRodalies = {
+      'C1': '#F37321',
+      'C2': '#B8412C',
+      'C3': '#007AC2',
+      'C4': '#70AD47',
+      'C5': '#7030A0',
+      'C6': '#264653'
+    };
+
+    const datosLineas = [
+      {
+        nombre: 'Metrovalencia',
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Isotip_de_Metroval%C3%A8ncia.svg',
+        colores: coloresMetrovalencia,
+        lineas: {
+          '1': 'Bétera - Castelló',
+          '2': 'Llíria - Torrent Avinguda',
+          '3': 'Rafelbunyol - Aeroport',
+          '4': 'Mas del Rosari - Doctor Lluch',
+          '5': 'Marítim - Àngel Guimerà',
+          '6': 'Tossal del Rei - Marítim',
+          '7': 'Marítim - Torrent Avinguda',
+          '8': 'Marítim - Neptú',
+          '9': 'Alboraia Peris Aragó - Riba-roja',
+          '10': 'Alacant - Natzaret'
+        }
+      },
+      {
+        nombre: 'TRAM d’Alacant',
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/TRAM_-_Metropolitano_de_Alicante_-T-.svg',
+        colores: coloresTram,
+        lineas: {
+          '1': 'Luceros – Benidorm',
+          '2': 'Luceros – Sant Vicent del Raspeig',
+          '3': 'Luceros – El Campello',
+          '4': 'Luceros – Plaza La Coruña',
+          '5': 'Porta del Mar – Plaza La Coruña'
+        }
+      },
+      {
+        nombre: 'Rodalia València',
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg',
+        colores: coloresRodalies,
+        lineas: {
+          'C1': 'València Nord – Gandia',
+          'C2': 'València Nord – Moixent',
+          'C3': 'València Nord – Utiel',
+          'C4': 'València Nord – Xirivella',
+          'C5': 'València Nord – Caudiel',
+          'C6': 'València Nord – Castelló de la Plana'
+        }
+      }
+    ];
+
+    const contenedor = document.getElementById('contenidor-lineas');
+
+    datosLineas.forEach(grupo => {
+      const seccion = document.createElement('section');
+      seccion.className = 'bloque-fuente';
+
+      const menu = document.createElement('div');
+      menu.className = 'menu-transport';
+      menu.tabIndex = 0;
+      menu.setAttribute('role', 'button');
+      menu.setAttribute('aria-expanded', 'false');
+
+      const logo = document.createElement('img');
+      logo.src = grupo.logo;
+      logo.alt = grupo.nombre + ' Logo';
+      logo.className = 'logo-transport';
+
+      const nombre = document.createElement('div');
+      nombre.className = 'nombre-operador';
+      nombre.textContent = grupo.nombre;
+
+      const contenedorLineas = document.createElement('div');
+      contenedorLineas.className = 'submenu-lineas';
+
+      for (const linea in grupo.lineas) {
+        const boton = document.createElement('button');
+        boton.textContent = 'Línia ' + linea;
+        boton.style.backgroundColor = grupo.colores[linea] || '#999';
+
+        boton.addEventListener('click', () => {
+          // Elimina recorridos anteriores
+          contenedorLineas.querySelectorAll('.info-recorrido').forEach(e => e.remove());
+
+          const recorrido = document.createElement('div');
+          recorrido.className = 'info-recorrido';
+          recorrido.textContent = 'Recorregut: ' + grupo.lineas[linea];
+          boton.insertAdjacentElement('afterend', recorrido);
+        });
+
+        contenedorLineas.appendChild(boton);
+      }
+
+      menu.addEventListener('click', () => {
+        const expanded = menu.getAttribute('aria-expanded') === 'true';
+        menu.setAttribute('aria-expanded', !expanded);
+        contenedorLineas.style.display = expanded ? 'none' : 'block';
+      });
+
+      menu.appendChild(logo);
+      menu.appendChild(nombre);
+      seccion.appendChild(menu);
+      seccion.appendChild(contenedorLineas);
+      contenedor.appendChild(seccion);
+    });
+  </script>
+</body>
+</html>
