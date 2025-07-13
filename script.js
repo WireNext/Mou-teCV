@@ -27,7 +27,7 @@ const fonts = [
         const lineas = (i.lineas_afectadas && i.lineas_afectadas.length > 0)
           ? i.lineas_afectadas.map(linea => {
               const num = linea.match(/\d+/)?.[0];
-              const color = colorsLineasMetroValencia[num] || '#666';
+              const color = colorsLineasMetroValencia[num] || getComputedStyle(document.body).getPropertyValue('--linea-default').trim();
               return `<span class="linea-metro" style="background-color: ${color}">${num}</span>`;
             }).join(' ')
           : 'Sense línies afectades';
@@ -47,9 +47,6 @@ const fonts = [
 ];
 
 const contenedor = document.getElementById('contenidor-incidencies');
-if (!contenedor) {
-  console.error('No se encontró el contenedor con id "contenidor-incidencies".');
-}
 
 fonts.forEach(font => {
   const bloqueFuente = document.createElement('section');
@@ -113,4 +110,40 @@ fonts.forEach(font => {
     menu.setAttribute('aria-expanded', !expanded);
     detalle.style.display = expanded ? 'none' : 'block';
   });
+});
+
+// Tema toggle
+
+const btnTema = document.getElementById('btn-tema');
+
+function aplicarTema(tema) {
+  if (tema === 'oscuro') {
+    document.body.classList.add('tema-oscuro');
+    document.body.classList.remove('tema-claro');
+    btnTema.textContent = '☀️';
+  } else {
+    document.body.classList.add('tema-claro');
+    document.body.classList.remove('tema-oscuro');
+    btnTema.textContent = '🌙';
+  }
+  localStorage.setItem('temaPreferido', tema);
+}
+
+// Al cargar, chequea preferencia
+
+const temaGuardado = localStorage.getItem('temaPreferido');
+if (temaGuardado) {
+  aplicarTema(temaGuardado);
+} else {
+  // Si no, usa preferencia sistema
+  const oscuroPref = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  aplicarTema(oscuroPref ? 'oscuro' : 'claro');
+}
+
+btnTema.addEventListener('click', () => {
+  if (document.body.classList.contains('tema-oscuro')) {
+    aplicarTema('claro');
+  } else {
+    aplicarTema('oscuro');
+  }
 });
