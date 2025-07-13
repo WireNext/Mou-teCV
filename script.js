@@ -35,15 +35,16 @@ const fonts = [
     logo: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg',
     formatter: (incidencias) => {
       if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
-      const relevantes = incidencias.filter(i => {
-        return i.tags?.some(t =>
-          ["C1", "C2", "C3", "C4", "C5", "C6"].includes(t.text)
-        );
-      });
+      const lineas = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'];
+      const variantes = lineas.flatMap(l => [l, l.replace('C', 'C-')]);
 
-      if (relevantes.length === 0) return 'No hi ha incidències en C1-C6.';
+      const incidenciasCercanias = incidencias.filter(i =>
+      variantes.some(v => i.paragraph.includes(v))
+    );
 
-      return '<ul>' + relevantes.map(i => {
+      if (incidenciasCercanias.length === 0) return 'No hi ha incidències en C1-C6.';
+
+      return '<ul>' + incidenciasCercanias.map(i => {
         const tags = i.tags?.filter(t => /^C[1-6]$/.test(t.text)) || [];
         const tagsHTML = tags.map(t => {
           const color = coloresLineasCercanias[t.text] || '#999';
