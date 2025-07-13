@@ -11,8 +11,17 @@ const fonts = [
     formatter: (incidencias) => {
       if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
       return '<ul>' + incidencias.map(i => {
-        const lineas = (i.lineas_afectadas && i.lineas_afectadas.length > 0) ? i.lineas_afectadas.join(', ') : 'Sense línies afectades';
-        return `<li><strong>Línies afectades:</strong> ${lineas}<br>${i.texto_alerta}</li>`;
+        const lineas = (i.lineas_afectadas && i.lineas_afectadas.length > 0)
+          ? i.lineas_afectadas.join(', ')
+          : 'Sense línies afectades';
+
+        // Mejorar legibilidad del texto de la alerta
+        const texto = i.texto_alerta
+          .replace(/\n/g, '<br>') // si hubiese saltos de línea reales
+          .replace(/–/g, '– ') // guiones largos con espacio
+          .replace(/([.])(?=[^\s])/g, '. '); // punto seguido sin espacio
+
+        return `<li><strong>Línies afectades:</strong> ${lineas}<br>${texto}</li>`;
       }).join('') + '</ul>';
     }
   },
@@ -45,11 +54,11 @@ fonts.forEach(font => {
 
   const estado = document.createElement('span');
   estado.className = 'estado-incidencias';
-  estado.textContent = '⏳'; // estado cargando
+  estado.textContent = '⏳'; // Cargando...
 
   const detalle = document.createElement('div');
   detalle.className = 'detalle-incidencias';
-  detalle.style.display = 'none'; // oculto inicialmente
+  detalle.style.display = 'none';
   detalle.style.padding = '0.5em 1em';
   detalle.style.border = '1px solid #ccc';
   detalle.style.marginTop = '0.5em';
@@ -69,11 +78,15 @@ fonts.forEach(font => {
     })
     .then(data => {
       if (!Array.isArray(data) || data.length === 0) {
-        estado.textContent = '✅'; // sin incidencias
+        estado.textContent = '✅';
         detalle.textContent = 'No hi ha incidències.';
       } else {
-        estado.textContent = '⚠️'; // con incidencias
-        detalle.innerHTML = font.formatter(data);
+        estado.textContent = '⚠️';
+        if (font.formatter) {
+          detalle.innerHTML = font.formatter(data);
+        } else {
+          detalle.innerHTML = '<ul>' + data.map(i => `<li>${i.texto_alerta}</li>`).join('') + '</ul>';
+        }
       }
     })
     .catch(error => {
@@ -83,7 +96,6 @@ fonts.forEach(font => {
     });
 
   menu.addEventListener('click', () => {
-    console.log(`Click en ${font.nom}`); // debug
     const expanded = menu.getAttribute('aria-expanded') === 'true';
     menu.setAttribute('aria-expanded', !expanded);
     detalle.style.display = expanded ? 'none' : 'block';
