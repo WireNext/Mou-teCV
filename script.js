@@ -14,7 +14,7 @@ const colorsLineasMetroValencia = {
 const coloresLineasTramAlacant = {
   "1": "#f03635",
   "2": "#00953a",
-  "3": "#00953a",
+  "3": "#fec100",
   "4": "#c29cc1",
   "5": "#004f8e"
 };
