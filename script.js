@@ -2,7 +2,7 @@ const fonts = [
   {
     nom: 'Rodalia València',
     url: 'https://tuusuario.github.io/cercanias-valencia/incidencias.json',
-    logo: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fes.m.wikipedia.org%2Fwiki%2FArchivo%3ACercanias_Logo.svg&psig=AOvVaw3VyCtLQh_ioL_O8XJgWsec&ust=1752458839261000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCNjGx4bguI4DFQAAAAAdAAAAABAE'
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Cercanias_Logo.svg'
   },
   {
     nom: 'Metrovalencia',
@@ -30,7 +30,7 @@ fonts.forEach(font => {
 
   const imgLogo = document.createElement('img');
   imgLogo.src = font.logo;
-  imgLogo.alt = `${font.nom} Logo`;
+  imgLogo.alt = `${font.nom} Logo`;  // <-- Aquí backticks
   imgLogo.className = 'logo-transport';
 
   const estado = document.createElement('span');
@@ -45,7 +45,7 @@ fonts.forEach(font => {
 
   fetch(font.url)
     .then(res => {
-      if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+      if (!res.ok) throw new Error(`Error HTTP: ${res.status}`); // <-- backticks aquí también
       return res.json();
     })
     .then(data => {
@@ -57,6 +57,6 @@ fonts.forEach(font => {
     })
     .catch(error => {
       estado.textContent = '⚠️';
-      console.error(`No s'ha pogut carregar incidències de ${font.nom}:`, error);
+      console.error(`No s'ha pogut carregar incidències de ${font.nom}:`, error); // <-- backticks aquí también
     });
 });
