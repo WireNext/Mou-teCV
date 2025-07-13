@@ -1,84 +1,75 @@
 const fonts = [
   {
-    nom: 'Rodalia València',
-    url: 'https://tuusuario.github.io/cercanias-valencia/incidencias.json',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg'
-  },
-  {
     nom: 'Metrovalencia',
-    url: 'https://raw.githubusercontent.com/WireNext/MetroValenciaIncidencias/refs/heads/main/avisos_metrovalencia.json',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Isotip_de_Metroval%C3%A8ncia.svg'
+    url: 'https://emtvalencia.github.io/incidencies/metrovalencia.json'
   },
   {
     nom: 'TRAM d’Alacant',
-    url: 'https://tuusuario.github.io/tram-alacant/incidencias.json',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/TRAM_-_Metropolitano_de_Alicante_-T-.svg'
+    url: 'https://emtvalencia.github.io/incidencies/tram.json'
+  },
+  {
+    nom: 'Rodalia València',
+    url: 'https://emtvalencia.github.io/incidencies/renfe.json'
   }
 ];
 
-const contenedor = document.getElementById('contenidor-incidencies');
-if (!contenedor) {
-  console.error('No se encontró el contenedor con id "contenidor-incidencies".');
-}
+const contenidor = document.getElementById('incidencies');
 
 fonts.forEach(font => {
-  const bloqueFuente = document.createElement('section');
-  bloqueFuente.className = 'bloque-fuente';
+  const bloc = document.createElement('div');
+  bloc.classList.add('font-bloc');
 
-  const menu = document.createElement('div');
-  menu.className = 'menu-transport';
-  menu.tabIndex = 0;
-  menu.setAttribute('aria-expanded', 'false');
-  menu.setAttribute('role', 'button');
+  const titol = document.createElement('h3');
+  titol.textContent = font.nom;
+  bloc.appendChild(titol);
 
-  const imgLogo = document.createElement('img');
-  imgLogo.src = font.logo;
-  imgLogo.alt = `${font.nom} Logo`;
-  imgLogo.className = 'logo-transport';
+  const estat = document.createElement('span');
+  estat.classList.add('estat');
+  estat.textContent = '⏳';
+  bloc.appendChild(estat);
 
-  const estado = document.createElement('span');
-  estado.className = 'estado-incidencias';
-  estado.textContent = '⏳'; // estado cargando
+  const detall = document.createElement('div');
+  detall.classList.add('detall');
+  detall.textContent = 'Carregant...';
+  bloc.appendChild(detall);
 
-  const detalle = document.createElement('div');
-  detalle.className = 'detalle-incidencias';
-  detalle.style.display = 'none'; // oculto inicialmente
-  detalle.style.padding = '0.5em 1em';
-  detalle.style.border = '1px solid #ccc';
-  detalle.style.marginTop = '0.5em';
-
-  menu.appendChild(imgLogo);
-  menu.appendChild(estado);
-
-  bloqueFuente.appendChild(menu);
-  bloqueFuente.appendChild(detalle);
-
-  contenedor.appendChild(bloqueFuente);
+  contenidor.appendChild(bloc);
 
   fetch(font.url)
-    .then(res => {
-      if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
-      return res.json();
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
     })
     .then(data => {
       if (!Array.isArray(data) || data.length === 0) {
-        estado.textContent = '✅'; // sin incidencias
-        detalle.textContent = 'No hi ha incidències.';
-      } else {
-        estado.textContent = '⚠️'; // con incidencias
-        detalle.innerHTML = '<ul>' + data.map(incidencia => `<li>${incidencia.descripcio || incidencia.titulo || incidencia.mensaje || 'Incidència'}</li>`).join('') + '</ul>';
+        estat.textContent = '✅';
+        detall.textContent = 'Sense incidències.';
+        return;
       }
+
+      estat.textContent = '⚠️';
+      detall.innerHTML = '<ul>' + data.map(incidencia => {
+        const text = obtenirTextIncidencia(incidencia, font);
+        const linies = incidencia.lineas_afectadas && incidencia.lineas_afectadas.length > 0
+          ? `<strong>Línies afectades:</strong> ${incidencia.lineas_afectadas.join(', ')}<br>`
+          : '';
+        return `<li>${linies}${text}</li>`;
+      }).join('') + '</ul>';
     })
     .catch(error => {
-      estado.textContent = '⚠️';
-      detalle.textContent = 'Error carregant incidències.';
+      estat.textContent = '⚠️';
+      detall.textContent = 'Error carregant incidències.';
       console.error(`No s'ha pogut carregar incidències de ${font.nom}:`, error);
     });
-
-  menu.addEventListener('click', () => {
-    console.log(`Click en ${font.nom}`); // debug
-    const expanded = menu.getAttribute('aria-expanded') === 'true';
-    menu.setAttribute('aria-expanded', !expanded);
-    detalle.style.display = expanded ? 'none' : 'block';
-  });
 });
+
+function obtenirTextIncidencia(incidencia, font) {
+  if (font.nom === 'Metrovalencia') {
+    return incidencia.texto_alerta || 'Incidència';
+  } else if (font.nom === 'Rodalia València') {
+    return incidencia.descripcio || incidencia.titulo || incidencia.mensaje || 'Incidència';
+  } else if (font.nom === 'TRAM d’Alacant') {
+    return incidencia.descripcio || incidencia.text || 'Incidència';
+  }
+  return JSON.stringify(incidencia);
+}
