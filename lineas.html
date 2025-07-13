@@ -53,6 +53,12 @@
       align-items: center;
       cursor: pointer;
       gap: 1rem;
+      outline: none;
+    }
+
+    .menu-transport:focus {
+      outline: none;
+      background-color: transparent; /* evitar fondo blanco */
     }
 
     .logo-transport {
@@ -114,7 +120,8 @@
   <header>Línies de Transport</header>
   <main id="contenidor-lineas"></main>
   <footer>
-    &copy; 2025 Castelló Al Dia – Informació de línies de transport públic
+    <!-- Footer limpio, sin nombre -->
+    &copy; 2025 – Informació de transport públic
   </footer>
 
   <script>
@@ -201,7 +208,6 @@
 
       const menu = document.createElement('div');
       menu.className = 'menu-transport';
-      menu.tabIndex = 0;
       menu.setAttribute('role', 'button');
       menu.setAttribute('aria-expanded', 'false');
 
