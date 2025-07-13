@@ -80,12 +80,17 @@ fonts.forEach(font => {
   detalle.style.border = '1px solid #ccc';
   detalle.style.marginTop = '0.5em';
 
+  // 🔹 Agregamos el nombre del operador al inicio del detalle
+  const nombreOperador = document.createElement('div');
+  nombreOperador.className = 'nombre-operador';
+  nombreOperador.textContent = font.nom;
+  detalle.appendChild(nombreOperador);
+
   menu.appendChild(imgLogo);
   menu.appendChild(estado);
 
   bloqueFuente.appendChild(menu);
   bloqueFuente.appendChild(detalle);
-
   contenedor.appendChild(bloqueFuente);
 
   fetch(font.url)
@@ -96,20 +101,23 @@ fonts.forEach(font => {
     .then(data => {
       if (!Array.isArray(data) || data.length === 0) {
         estado.textContent = '✅';
-        detalle.textContent = 'No hi ha incidències.';
+        detalle.innerHTML += '<p>No hi ha incidències.</p>';
       } else {
         estado.textContent = '⚠️';
-        detalle.innerHTML = font.formatter ? font.formatter(data)
-                                           : '<ul>' + data.map(i => `<li>${i.texto_alerta}</li>`).join('') + '</ul>';
+        const html = font.formatter
+          ? font.formatter(data)
+          : '<ul>' + data.map(i => `<li>${i.texto_alerta}</li>`).join('') + '</ul>';
+        detalle.innerHTML += html;
       }
     })
     .catch(error => {
       estado.textContent = '❓';
-      detalle.textContent = 'Error carregant incidències.';
+      detalle.innerHTML += '<p>Error carregant incidències.</p>';
       console.error(`No s'ha pogut carregar incidències de ${font.nom}:`, error);
     });
 
-  menu.addEventListener('click', () => {
+  // 🔹 Solo se despliega al hacer clic en el logo
+  imgLogo.addEventListener('click', () => {
     const expanded = menu.getAttribute('aria-expanded') === 'true';
     menu.setAttribute('aria-expanded', !expanded);
     detalle.style.display = expanded ? 'none' : 'block';
