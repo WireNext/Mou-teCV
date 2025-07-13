@@ -1,116 +1,86 @@
-:root {
-  --bg: #121212;
-  --card: #1e1e1e;
-  --text: #e0e0e0;
-  --accent: #ff5252;
-  --ok: #4caf50;
-  --warn: #ff9800;
-}
-
 body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: var(--bg);
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: #f8f9fa;
+  color: #333;
+  margin: 0; padding: 0;
 }
-
-header, footer {
+header {
+  background: #222;
+  color: #eee;
+  padding: 1em;
   text-align: center;
-  padding: 1rem;
-  background: #181818;
-  border-bottom: 1px solid #333;
+  font-weight: bold;
+  font-size: 1.5em;
 }
-
-header h1 {
-  margin: 0.2em 0;
-}
-
 main {
-  flex: 1;
-  padding: 2rem;
-  max-width: 900px;
-  margin: auto;
+  max-width: 700px;
+  margin: 1.5em auto;
+  padding: 0 1em;
 }
-
-main#contenidor-incidencies {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-/* Bloque de cada operador */
 .bloque-fuente {
-  flex: 1 1 280px;
-  max-width: 320px;
-  min-width: 280px;
-  background-color: var(--card);
-  padding: 1rem;
+  background: white;
   border-radius: 8px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 0.1);
+  margin-bottom: 1.2em;
+  overflow: hidden;
 }
-
-/* Menú transportes con logo + nombre horizontal siempre */
 .menu-transport {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   cursor: pointer;
-  user-select: none;
-  border: none;
-  background: transparent;
-  padding: 0;
-  flex-wrap: nowrap;
-  white-space: nowrap;
+  padding: 0.75em 1em;
+  gap: 1em;
+  border-bottom: 1px solid #ddd;
 }
-
-/* Logo ajustado para tamaño pequeño pero claro */
+.menu-transport[aria-expanded="true"] {
+  background-color: #f1f1f1;
+}
 .logo-transport {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
 }
-
-/* Texto de estado de incidencias */
-.estado-incidencias {
-  font-size: 1.2rem;
-  font-weight: 500;
+.nombre-operador {
+  font-weight: 600;
+  flex-grow: 1;
+  font-size: 1.1em;
   user-select: none;
 }
-
-/* Texto de detalle */
+.estado-incidencias {
+  font-size: 1.5em;
+  user-select: none;
+}
 .detalle-incidencias {
-  white-space: pre-line;
-  overflow-wrap: break-word;
+  padding: 1em;
   font-size: 0.95em;
   line-height: 1.4;
+  display: none;
+  background: #fafafa;
 }
-
-footer {
-  font-size: 0.9rem;
-  border-top: 1px solid #333;
-}
-
-footer a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
 .linea-metro {
   display: inline-block;
-  min-width: 22px;
-  padding: 4px 6px;
-  margin: 2px 4px 2px 0;
-  border-radius: 4px;
+  min-width: 24px;
+  color: white;
+  padding: 0 6px;
+  margin-right: 4px;
+  border-radius: 3px;
   font-weight: bold;
   font-size: 0.85em;
-  color: white;
-  text-align: center;
-  background-color: #666;
+}
+ul {
+  margin: 0;
+  padding-left: 1.2em;
+}
+li {
+  margin-bottom: 0.6em;
+}
+@media (max-width: 480px) {
+  .menu-transport {
+    gap: 0.5em;
+    padding: 0.5em 0.75em;
+  }
+  .logo-transport {
+    width: 36px;
+    height: 36px;
+  }
 }
