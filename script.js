@@ -67,7 +67,7 @@ const fonts = [
           .replace(/([.])(?=[^\s])/g, '. ');
         return `<li>${lineas}<br>${texto}</li>`;
       }).join('') + '</ul>';
-    },
+    }
 ];
 
 const contenedor = document.getElementById('contenidor-incidencies');
