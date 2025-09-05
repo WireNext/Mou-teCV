@@ -152,10 +152,18 @@ li {
 }
 
 .menu-principal {
+  background: var(--detalle-bg);
+  padding: 0.4em 0.8em;
+  border-radius: 6px;
+  border: 1px solid var(--bloque-border);
   cursor: pointer;
-  font-weight: bold;
-  user-select: none;
+  transition: background 0.2s;
 }
+
+.menu-principal:hover {
+  background: var(--bloque-bg);
+}
+
 
 .opcions-menu {
   list-style: none;
