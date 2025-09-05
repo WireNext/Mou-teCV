@@ -31,40 +31,34 @@ const coloresLineasCercanias = {
 const fonts = [
   {
     nom: 'Rodalia València',
-    url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://gtfsrt.renfe.com/alerts.pb'),
+    url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.renfe.com/content/renfe/es/es/grupo-renfe/comunicacion/renfe-al-dia/avisos/jcr:content/root/responsivegrid/rfincidentreports_co.noticeresults.json?noticetags=valencia'),
     logo: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg',
     formatter: (incidencias) => {
       if (!incidencias || incidencias.length === 0) return 'No hi ha incidències.';
+      const lineas = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6'];
+      const variantes = lineas.flatMap(l => [l, l.replace('C', 'C-')]);
 
-      // Rutas que nos interesan
-      const rutas = [
-        "40T0001C1","40T0002C1","40T0005C2","40T0006C2","40T0007C3","40T0008C3",
-        "40T0009C4","40T0010C4","40T0011C5","40T0012C5","40T0013C6","40T0014C6",
-        "40T0015C6","40T0016C6","40T0017C3","40T0018C3","40T0019C5","40T0020C5",
-        "40T0021C6","40T0022C6","40T0023C2","40T0024C2","40T0025C3","40T0026C3",
-        "40T0027C1","40T0028C1","40T0029C2","40T0030C2","40T0031C5","40T0032C5",
-        "40T0033C3","40T0034C3","40T0035C2","40T0036C2","40T0037C2","40T0038C2",
-        "41T0001C1","41T0002C1","41T0005C3","41T0006C3","41T0009C2","41T0010C2"
-      ];
+      const incidenciasCercanias = incidencias.filter(i =>
+      variantes.some(v => i.paragraph.includes(v))
+    );
 
-      // Filtrar incidencias que contengan alguna de las rutas
-      const incidenciasFiltradas = incidencias.filter(i =>
-        i.rutas?.some(r => rutas.includes(r))
-      );
+      if (incidenciasCercanias.length === 0) return 'No hi ha incidències en C1-C6.';
 
-      if (incidenciasFiltradas.length === 0) return 'No hi ha incidències en les rutes seleccionades.';
+      return '<ul>' + incidenciasCercanias.map(i => {
+        const tags = i.tags?.filter(t => /^C[1-6]$/.test(t.text)) || [];
+        const tagsHTML = tags.map(t => {
+          const color = coloresLineasCercanias[t.text] || '#999';
+          return `<span class="linea-cercanias" style="background-color: ${color}">${t.text}</span>`;
+        }).join(' ');
 
-      return '<ul>' + incidenciasFiltradas.map(i => {
-        const rutasHTML = i.rutas.map(r => `<span class="ruta-cercanias">${r}</span>`).join(' ');
-
-        const texto = i.descripcion
+        const texto = i.paragraph
           .replace(/\n/g, '<br>')
           .replace(/–/g, '– ')
           .replace(/([.])(?=[^\s])/g, '. ');
 
-        const fecha = i.fecha ? `<small class="fecha-aviso">${i.fecha}</small>` : '';
+        const fecha = i.chipText ? `<small class="fecha-aviso">${i.chipText}</small>` : '';
 
-        return `<li>${rutasHTML}<br><p>${texto}</p>${fecha}<br><a href="${i.link}" target="_blank" rel="noopener noreferrer">Más info</a></li>`;
+        return `<li>${tagsHTML}<br><p>${texto}</p>${fecha}<br><a href="${i.link}" target="${i.target || '_blank'}" rel="noopener noreferrer">Más info</a></li>`;
       }).join('') + '</ul>';
     }
   },
