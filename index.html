@@ -11,18 +11,34 @@
 <header>
   <button id="btn-tema" aria-label="Canviar tema" title="Canviar tema">🌙</button>
   <div class="titulo-header">Incidències de Transport</div>
-
-  <nav class="menu-desplegable">
-    <span class="menu-principal">Linies ▾</span>
-    <ul class="opcions-menu">
-      <li><a href="https://wirenext.github.io/TRAM-CS/">TRAM Castelló</a></li>
-      <li><a href="https://wirenext.github.io/MetroValenciaHorarios/">MetroValencia</a></li>
-      <li><a href="https://wirenext.github.io/TRAM-ALC/">TRAM Alacant</a></li>
-    </ul>
-  </nav>
 </header>
 
-<main id="contenidor-incidencies"></main>
+<main>
+    <section class="bloque-fuente" id="bloque-incidencias-unificadas">
+        <div class="menu-transport" tabindex="0" aria-expanded="false" role="button">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg" alt="Logo Rodalies Valencia" class="logo-transport" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/df/Isotip_de_Metroval%C3%A8ncia.svg" alt="Logo MetroValencia" class="logo-transport" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fd/TRAM_-_Metropolitano_de_Alicante_-T-.svg" alt="Logo Tram Alacant" class="logo-transport" />
+            <div class="nombre-operador">Estat de la Xarxa</div>
+            <span class="estado-incidencias">⏳</span> 
+        </div>
+        <div class="detalle-incidencias" id="detalle-incidencias-unificadas">
+            <p>Carregant avisos...</p>
+        </div>
+    </section>
+</main>
+
+<section id="seccio-mapa">
+  <div id="enlaces-mapas">
+    <button data-url="https://wirenext.github.io/TRAM-CS/" class="boton-mapa">TRAM Castelló</button>
+    <button data-url="https://wirenext.github.io/MetroValenciaHorarios/" class="boton-mapa">MetroValencia</button>
+    <button data-url="https://wirenext.github.io/TRAM-ALC/" class="boton-mapa">TRAM Alacant</button>
+  </div>
+  
+  <div id="contenedor-mapa">
+    <p class="instruccion-mapa">Fes clic a un dels botons de dalt per veure el mapa o la informació d'horaris.</p>
+  </div>
+</section>
 
 <script src="script.js"></script>
 </body>

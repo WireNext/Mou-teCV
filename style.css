@@ -1,207 +1,247 @@
 /* Variables para tema claro y oscuro */
 :root {
-  --fondo: #f8f9fa;
-  --texto: #333;
-  --header-bg: #222;
-  --header-texto: #eee;
+  --fondo: #f0f2f5; 
+  --texto: #212529; 
+  --header-bg: #007bff; 
+  --header-texto: #ffffff;
   --bloque-bg: white;
-  --bloque-border: #ddd;
-  --detalle-bg: #fafafa;
-  --linea-default: #666;
+  --bloque-border: #e0e0e0;
+  --detalle-bg: #ffffff;
+  --linea-default: #6c757d; 
+  --sombra-sutil: 0 4px 12px rgba(0, 0, 0, 0.08); 
+  --color-acento: #007bff; /* Usado para los botones */
 }
 
 body.tema-oscuro {
-  --fondo: #121212;
-  --texto: #ddd;
-  --header-bg: #1e1e1e;
-  --header-texto: #eee;
-  --bloque-bg: #222;
-  --bloque-border: #444;
-  --detalle-bg: #2a2a2a;
-  --linea-default: #aaa;
+  --fondo: #1a1a2e; 
+  --texto: #f0f0f0;
+  --header-bg: #0f4c75;
+  --header-texto: #e0e0e0;
+  --bloque-bg: #2c394b;
+  --bloque-border: #445566;
+  --detalle-bg: #3a4750;
+  --linea-default: #b0c4de;
+  --sombra-sutil: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --color-acento: #4CB5F5;
 }
 
+/* Base */
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background: var(--fondo);
+  font-family: Arial, sans-serif;
+  background-color: var(--fondo);
   color: var(--texto);
-  margin: 0; padding: 0;
-  transition: background 0.3s, color 0.3s;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 header {
-  background: var(--header-bg);
+  background-color: var(--header-bg);
   color: var(--header-texto);
-  padding: 0.8em 1em;
-  font-weight: bold;
-  font-size: 1.3em;
+  padding: 15px 20px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* permite que el menú baje en pantallas pequeñas */
-  gap: 0.5em;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .titulo-header {
-  flex: 1;
-  text-align: center;
-}
-
-.menu-desplegable {
-  position: relative; /* ya no absolute */
-  font-size: 0.9em;
-}
-
-#btn-tema {
-  font-size: 1.3em;
-  background: none;
-  border: none;
-  color: var(--header-texto);
-  cursor: pointer;
-}
-#btn-tema:focus {
-  outline: 2px solid var(--header-texto);
-  outline-offset: 2px;
+  font-size: 1.5em;
+  font-weight: bold;
 }
 
 main {
-  max-width: 700px;
-  margin: 1.5em auto;
-  padding: 0 1em;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 20px;
 }
+
+/* Estilos de Botón Tema */
+#btn-tema {
+  background: none;
+  border: none;
+  color: var(--header-texto);
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+
+/* --- Bloque Único Unificado --- */
 
 .bloque-fuente {
   background: var(--bloque-bg);
-  border-radius: 8px;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 0.1);
-  margin-bottom: 1.2em;
-  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: var(--sombra-sutil);
   border: 1px solid var(--bloque-border);
-  transition: background 0.3s, border-color 0.3s;
+  overflow: hidden; /* Para contener los floats si se usan o para el border-radius */
 }
 
 .menu-transport {
   display: flex;
   align-items: center;
+  padding: 15px;
   cursor: pointer;
-  padding: 0.75em 1em;
-  gap: 1em;
+  background: var(--detalle-bg);
   border-bottom: 1px solid var(--bloque-border);
-  user-select: none;
+  transition: background-color 0.2s;
 }
 
-.menu-transport[aria-expanded="true"] {
-  background-color: var(--detalle-bg);
+.menu-transport:focus {
+    outline: 2px solid var(--color-acento);
+    outline-offset: -2px;
 }
 
-.logo-transport {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
+.menu-transport:hover {
+  background-color: var(--fondo);
 }
 
-.nombre-operador {
-  font-weight: 600;
-  flex-grow: 1;
+.menu-transport .logo-transport {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+  border: 1px solid var(--bloque-border);
+}
+
+.menu-transport .nombre-operador {
+  font-weight: bold;
   font-size: 1.1em;
+  flex-grow: 1;
 }
 
-.estado-incidencias {
-  font-size: 1.5em;
+.menu-transport .estado-incidencias {
+  font-size: 1.2em;
+  font-weight: bold;
 }
 
 .detalle-incidencias {
-  padding: 1em;
-  font-size: 0.95em;
-  line-height: 1.4;
-  display: none;
+  padding: 15px;
   background: var(--detalle-bg);
-  transition: background 0.3s;
+  display: block; /* Por defecto, se controla con JS */
 }
 
-.linea-metro {
-  display: inline-block;
-  min-width: 24px;
-  color: white;
-  padding: 0 6px;
-  margin-right: 4px;
-  border-radius: 3px;
-  font-weight: bold;
-  font-size: 0.85em;
-}
-
-ul {
-  margin: 0;
-  padding-left: 1.2em;
-}
-li {
-  margin-bottom: 0.6em;
-}
-
-@media (max-width: 480px) {
-  .menu-transport {
-    gap: 0.5em;
-    padding: 0.5em 0.75em;
-  }
-  .logo-transport {
-    width: 36px;
-    height: 36px;
-  }
-}
-
-/* Estilo menú desplegable */
-.menu-desplegable {
-  position: absolute;
-  left: 1em;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.8em;
-}
-
-.menu-principal {
-  background: var(--detalle-bg);
-  padding: 0.4em 0.8em;
-  border-radius: 6px;
-  border: 1px solid var(--bloque-border);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.menu-principal:hover {
-  background: var(--bloque-bg);
-}
-
-
-.opcions-menu {
+.detalle-incidencias ul {
   list-style: none;
-  margin: 0;
-  padding: 0.5em 0;
-  background: var(--header-bg);
-  position: absolute;
-  display: none;
-  flex-direction: column;
-  border: 1px solid var(--bloque-border);
-  border-radius: 4px;
-  z-index: 100;
-}
-
-.opcions-menu li {
+  padding: 0;
   margin: 0;
 }
 
-.opcions-menu a {
-  display: block;
-  padding: 0.5em 1em;
-  color: var(--header-texto);
-  text-decoration: none;
-  white-space: nowrap;
+/* ESTILOS AÑADIDOS PARA EL LOGO Y LA ESTRUCTURA DEL LISTADO UNIFICADO */
+
+/* Estilo para los contenedores de las incidencias (la línea <li>) */
+#detalle-incidencias-unificadas ul li {
+    display: flex; /* Permite al logo y tags de línea estar en la misma línea */
+    flex-wrap: wrap; /* Permite que el texto se envuelva si es necesario */
+    padding: 10px 0;
+    border-bottom: 1px solid var(--bloque-border);
+    align-items: center;
 }
 
-.opcions-menu a:hover {
-  background: var(--detalle-bg);
+#detalle-incidencias-unificadas ul li:last-child {
+    border-bottom: none;
 }
 
-.menu-desplegable:hover .opcions-menu {
-  display: flex;
+/* Estilo para los tags de línea (L1, R2, etc.) */
+.linea-metro, .linea-cercanias {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    font-size: 0.85em;
+    font-weight: bold;
+    margin-right: 4px; /* Espacio entre tags */
+    white-space: nowrap;
+    vertical-align: middle;
 }
 
+/* Estilo para los logos de servicio dentro de las incidencias unificadas */
+.incidencia-logo-servicio {
+    height: 1.2em; /* Altura pequeña para el logo */
+    width: auto;
+    margin-right: 6px; /* Espacio antes de los tags de línea */
+    vertical-align: middle; /* Alineación vertical con el texto */
+    /* Asegurar que se muestre en línea con los tags */
+    display: inline-block; 
+}
+
+
+/* Estilo para el párrafo de texto de la incidencia */
+#detalle-incidencias-unificadas ul li p {
+    flex-basis: 100%; /* El párrafo de texto ocupa toda la línea después de los tags/logo */
+    margin: 5px 0 0 0;
+    font-size: 0.95em;
+    line-height: 1.4;
+    color: var(--texto);
+}
+
+/* Estilo para las fechas pequeñas */
+#detalle-incidencias-unificadas ul li .fecha-aviso {
+    flex-basis: 100%; 
+    display: block;
+    margin-top: 5px;
+    font-size: 0.8em;
+    color: var(--linea-default);
+}
+/* --- Fin Bloque Único Unificado --- */
+
+
+/* --- Sección de Mapas --- */
+
+#seccio-mapa {
+    max-width: 800px;
+    margin: 30px auto 20px auto;
+    padding: 0 20px;
+}
+
+#enlaces-mapas {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.boton-mapa {
+    padding: 8px 15px;
+    background-color: var(--bloque-bg);
+    color: var(--texto);
+    border: 1px solid var(--bloque-border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.boton-mapa:hover {
+    background-color: var(--detalle-bg);
+    border-color: var(--color-acento);
+}
+
+.boton-mapa.activo {
+    background-color: var(--color-acento);
+    color: var(--header-texto);
+    border-color: var(--color-acento);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+#contenedor-mapa {
+    background: var(--bloque-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    min-height: 200px;
+    border: 1px solid var(--bloque-border);
+    box-shadow: var(--sombra-sutil);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.instruccion-mapa {
+    color: var(--linea-default);
+    padding: 20px;
+    text-align: center;
+}
