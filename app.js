@@ -7,24 +7,53 @@ const GTFS_URLS = {
     trips: 'https://raw.githubusercontent.com/WireNext/cercaniasgtfs/refs/heads/main/data_csv/trips.csv'
 };
 
-// Variables globals d'estat
+const EMT_ZIP_URL = 'https://opendata.vlci.valencia.es/dataset/ab058cf8-ad3e-4d9c-ac89-0c6367ecf351/resource/c81b69e6-c082-44dc-acc6-66fc417b4e66/download/google_transit2026-09-25.zip';
+
+// Iconos personalizados
+const cercaniasIcon = L.icon({
+    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/25/Cercanias_Logo.svg',
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    popupAnchor: [0, -11]
+});
+
+const busIcon = L.icon({
+    iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e6/Bus-logo.svg',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, -10]
+});
+
+// Estado global de capas
 let map;
-let shapesLayerGroup; // Capa per a afegir/esborrar línies dinàmicament
+let shapesLayerGroup;
+let cercaniasLayerGroup;
+let emtLayerGroup;
+
+// Estado global para Cercanías
 let validStationCodes = new Set();
 let stationsMap = new Map();
 let activeServices = new Set();
 let routesMap = new Map();
 let tripsMap = new Map();
 let stopTimesByStation = new Map();
+let shapePointsMap = new Map();
+let routeToShapesMap = new Map();
 
-// Mapeigs de geometries (shapes)
-let shapePointsMap = new Map();  // shape_id -> [{lat, lon, seq}]
-let routeToShapesMap = new Map(); // route_id -> Set(shape_id)
+// Estado global para EMT Bus
+let emtStopsMap = new Map();
+let emtRoutesMap = new Map();
+let emtTripsMap = new Map();
+let emtActiveServices = new Set();
+let emtStopTimes = new Map();
+let emtShapePointsMap = new Map();
+let emtRouteToShapesMap = new Map();
 
 document.addEventListener('DOMContentLoaded', () => {
     initMap();
     initNavigation();
     initModal();
+    initFilterControls();
     loadAllDataFast();
 });
 
@@ -39,8 +68,33 @@ function initMap() {
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // Inicialitzem el grup de capes per a les línies
+    // Grups de capes
     shapesLayerGroup = L.layerGroup().addTo(map);
+    cercaniasLayerGroup = L.layerGroup().addTo(map); // Cercanías activat per defecte
+    emtLayerGroup = L.layerGroup();                   // EMT desactivat per defecte
+}
+
+function initFilterControls() {
+    const chkCercanias = document.getElementById('chk-cercanias');
+    const chkEmt = document.getElementById('chk-emt');
+
+    chkCercanias.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            map.addLayer(cercaniasLayerGroup);
+        } else {
+            map.removeLayer(cercaniasLayerGroup);
+            shapesLayerGroup.clearLayers();
+        }
+    });
+
+    chkEmt.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            map.addLayer(emtLayerGroup);
+        } else {
+            map.removeLayer(emtLayerGroup);
+            shapesLayerGroup.clearLayers();
+        }
+    });
 }
 
 function initNavigation() {
@@ -74,8 +128,8 @@ async function loadAllDataFast() {
     const statusBadge = document.getElementById('data-status');
 
     try {
-        // 1. Carregar CSV local d'estacions (separat per ';')
-        statusBadge.textContent = 'Carregant estacions...';
+        // --- 1. Cercanías ---
+        statusBadge.textContent = 'Carregant estacions de Cercanías...';
         const responseLocal = await fetch('./estaciones-cercanias-valencia.csv');
         if (!responseLocal.ok) throw new Error("No s'ha trobat estaciones-cercanias-valencia.csv");
         
@@ -83,29 +137,28 @@ async function loadAllDataFast() {
         parseLocalStations(localCsvText);
         renderStationsOnMap();
 
-        // 2. Descarregar fitxers GTFS secundaris en PARAL·LEL
-        statusBadge.textContent = 'Carregant dades GTFS...';
+        statusBadge.textContent = 'Carregant GTFS de Cercanías...';
         const [calText, routesText, tripsText] = await Promise.all([
             fetch(GTFS_URLS.calendar).then(r => r.text()),
             fetch(GTFS_URLS.routes).then(r => r.text()),
             fetch(GTFS_URLS.trips).then(r => r.text())
         ]);
 
-        // 3. Processar metadades lleugeres
         determineActiveServices(calText);
         parseRoutes(routesText);
         parseTrips(tripsText);
 
-        // 4. Carregar i filtrar stop_times.csv mitjançant STREAMS
-        statusBadge.textContent = 'Filtre d\'horaris en curs...';
+        statusBadge.textContent = 'Filtre d\'horaris Cercanías...';
         await parseStopTimesStream(GTFS_URLS.stop_times);
 
-        // 5. Enmagatzemar geometries de shapes.csv en memòria (sense dibuixar encara)
-        statusBadge.textContent = 'Carregant línies...';
         fetch(GTFS_URLS.shapes)
             .then(r => r.text())
             .then(shapesText => parseShapesData(shapesText))
             .catch(err => console.warn("Error en carregar shapes:", err));
+
+        // --- 2. EMT València ---
+        statusBadge.textContent = 'Carregant autobús EMT...';
+        await loadEMTData();
 
         statusBadge.textContent = 'Completat';
         statusBadge.style.background = '#dcfce7';
@@ -118,6 +171,10 @@ async function loadAllDataFast() {
         statusBadge.style.color = '#991b1b';
     }
 }
+
+// ==========================================
+// PARSERS & RENDER CERCANÍAS
+// ==========================================
 
 function parseLocalStations(csvText) {
     const lines = csvText.trim().split(/\r?\n/);
@@ -133,7 +190,8 @@ function parseLocalStations(csvText) {
                 DESCRIPCION: row[1] || 'Estació',
                 LATITUD: row[2] || '0',
                 LONGITUD: row[3] || '0',
-                POBLACION: row[6] || ''
+                POBLACION: row[6] || '',
+                isBus: false
             });
         }
     }
@@ -211,7 +269,6 @@ function parseTrips(csvText) {
                 shapeId: shapeId
             });
 
-            // Mapegem quines shapes corresponen a quina ruta (route_id)
             if (shapeId) {
                 if (!routeToShapesMap.has(routeId)) {
                     routeToShapesMap.set(routeId, new Set());
@@ -284,61 +341,283 @@ function parseShapesData(csvText) {
 }
 
 function renderStationsOnMap() {
+    cercaniasLayerGroup.clearLayers();
     stationsMap.forEach(st => {
         const lat = parseFloat(st.LATITUD.replace(',', '.'));
         const lon = parseFloat(st.LONGITUD.replace(',', '.'));
 
         if (lat && lon) {
-            const marker = L.circleMarker([lat, lon], {
-                radius: 6,
-                fillColor: '#d97706',
-                color: '#ffffff',
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 0.9
-            }).addTo(map);
-
+            const marker = L.marker([lat, lon], { icon: cercaniasIcon });
             marker.on('click', () => showStationDetails(st));
+            cercaniasLayerGroup.addLayer(marker);
         }
     });
 }
 
-// Dibuixa les línies específiques de l'estació seleccionada amb el seu color corresponent
-function renderShapesForStation(stationCode) {
-    shapesLayerGroup.clearLayers(); // Neteja línies anteriors
+// ==========================================
+// PARSERS & RENDER EMT
+// ==========================================
 
-    const rawSchedules = stopTimesByStation.get(stationCode) || [];
+async function loadEMTData() {
+    const response = await fetch(EMT_ZIP_URL);
+    if (!response.ok) throw new Error("Error en descarregar GTFS EMT");
+    
+    const zipBlob = await response.blob();
+    const zip = await JSZip.loadAsync(zipBlob);
+
+    const [calendarTxt, routesTxt, stopsTxt, tripsTxt, shapesTxt, stopTimesTxt] = await Promise.all([
+        zip.file('calendar.txt')?.async('string') || zip.file('calendar.csv')?.async('string'),
+        zip.file('routes.txt')?.async('string') || zip.file('routes.csv')?.async('string'),
+        zip.file('stops.txt')?.async('string') || zip.file('stops.csv')?.async('string'),
+        zip.file('trips.txt')?.async('string') || zip.file('trips.csv')?.async('string'),
+        zip.file('shapes.txt')?.async('string') || zip.file('shapes.csv')?.async('string'),
+        zip.file('stop_times.txt')?.async('string') || zip.file('stop_times.csv')?.async('string')
+    ]);
+
+    if (calendarTxt) parseEMTCalendar(calendarTxt);
+    if (routesTxt) parseEMTRoutes(routesTxt);
+    if (stopsTxt) parseEMTStops(stopsTxt);
+    if (tripsTxt) parseEMTTrips(tripsTxt);
+    if (shapesTxt) parseEMTShapes(shapesTxt);
+    if (stopTimesTxt) parseEMTStopTimes(stopTimesTxt);
+
+    renderEMTStopsOnMap();
+}
+
+function parseEMTCalendar(txt) {
+    const today = new Date();
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const currentDayName = days[today.getDay()];
+    
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const currentDateInt = parseInt(`${yyyy}${mm}${dd}`, 10);
+
+    const lines = txt.trim().split(/\r?\n/);
+    if (lines.length < 2) return;
+
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const serviceIdx = headers.indexOf('service_id');
+    const dayIdx = headers.indexOf(currentDayName);
+    const startIdx = headers.indexOf('start_date');
+    const endIdx = headers.indexOf('end_date');
+
+    for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',').map(c => c.trim().replace(/"/g, ''));
+        if (cols.length <= endIdx) continue;
+
+        const serviceId = cols[serviceIdx];
+        const runsToday = cols[dayIdx] === '1';
+        const startDate = parseInt(cols[startIdx], 10);
+        const endDate = parseInt(cols[endIdx], 10);
+
+        if (runsToday && currentDateInt >= startDate && currentDateInt <= endDate) {
+            emtActiveServices.add(serviceId);
+        }
+    }
+}
+
+function parseEMTStops(txt) {
+    const lines = txt.trim().split(/\r?\n/);
+    if (lines.length < 2) return;
+
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const idIdx = headers.indexOf('stop_id');
+    const nameIdx = headers.indexOf('stop_name');
+    const latIdx = headers.indexOf('stop_lat');
+    const lonIdx = headers.indexOf('stop_lon');
+
+    for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',').map(c => c.trim().replace(/"/g, ''));
+        if (cols.length <= latIdx) continue;
+
+        const id = cols[idIdx];
+        emtStopsMap.set(id, {
+            CÓDIGO: id,
+            DESCRIPCION: cols[nameIdx] || 'Parada EMT',
+            LATITUD: cols[latIdx],
+            LONGITUD: cols[lonIdx],
+            POBLACION: 'València (EMT)',
+            isBus: true
+        });
+    }
+}
+
+function parseEMTRoutes(txt) {
+    const lines = txt.trim().split(/\r?\n/);
+    if (lines.length < 2) return;
+
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const idIdx = headers.indexOf('route_id');
+    const shortIdx = headers.indexOf('route_short_name');
+    const longIdx = headers.indexOf('route_long_name');
+    const colorIdx = headers.indexOf('route_color');
+    const textColorIdx = headers.indexOf('route_text_color');
+
+    for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',').map(c => c.trim().replace(/"/g, ''));
+        if (cols.length <= idIdx) continue;
+
+        const routeId = cols[idIdx];
+        emtRoutesMap.set(routeId, {
+            shortName: cols[shortIdx] || routeId,
+            longName: cols[longIdx] || '',
+            color: cols[colorIdx] ? `#${cols[colorIdx]}` : '#ef4444',
+            textColor: cols[textColorIdx] ? `#${cols[textColorIdx]}` : '#ffffff'
+        });
+    }
+}
+
+function parseEMTTrips(txt) {
+    const lines = txt.trim().split(/\r?\n/);
+    if (lines.length < 2) return;
+
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const routeIdx = headers.indexOf('route_id');
+    const serviceIdx = headers.indexOf('service_id');
+    const tripIdx = headers.indexOf('trip_id');
+    const headsignIdx = headers.indexOf('trip_headsign');
+    const shapeIdx = headers.indexOf('shape_id');
+
+    for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',').map(c => c.trim().replace(/"/g, ''));
+        if (cols.length <= tripIdx) continue;
+
+        const serviceId = cols[serviceIdx];
+        if (emtActiveServices.has(serviceId)) {
+            const tripId = cols[tripIdx];
+            const routeId = cols[routeIdx];
+            const shapeId = cols[shapeIdx] || '';
+
+            emtTripsMap.set(tripId, {
+                routeId: routeId,
+                headsign: cols[headsignIdx] || '',
+                shapeId: shapeId
+            });
+
+            if (shapeId) {
+                if (!emtRouteToShapesMap.has(routeId)) {
+                    emtRouteToShapesMap.set(routeId, new Set());
+                }
+                emtRouteToShapesMap.get(routeId).add(shapeId);
+            }
+        }
+    }
+}
+
+function parseEMTShapes(txt) {
+    const lines = txt.trim().split(/\r?\n/);
+    if (lines.length < 2) return;
+
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const idIdx = headers.indexOf('shape_id');
+    const latIdx = headers.indexOf('shape_pt_lat');
+    const lonIdx = headers.indexOf('shape_pt_lon');
+    const seqIdx = headers.indexOf('shape_pt_sequence');
+
+    for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',').map(c => c.trim().replace(/"/g, ''));
+        if (cols.length <= seqIdx) continue;
+
+        const shapeId = cols[idIdx];
+        const lat = parseFloat(cols[latIdx]);
+        const lon = parseFloat(cols[lonIdx]);
+        const seq = parseInt(cols[seqIdx], 10);
+
+        if (!isNaN(lat) && !isNaN(lon)) {
+            if (!emtShapePointsMap.has(shapeId)) {
+                emtShapePointsMap.set(shapeId, []);
+            }
+            emtShapePointsMap.get(shapeId).push({ lat, lon, seq });
+        }
+    }
+}
+
+function parseEMTStopTimes(txt) {
+    const lines = txt.trim().split(/\r?\n/);
+    if (lines.length < 2) return;
+
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const tripIdx = headers.indexOf('trip_id');
+    const depIdx = headers.indexOf('departure_time');
+    const stopIdx = headers.indexOf('stop_id');
+
+    for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',').map(c => c.trim().replace(/"/g, ''));
+        if (cols.length <= stopIdx) continue;
+
+        const tripId = cols[tripIdx];
+        const stopId = cols[stopIdx];
+
+        if (emtStopsMap.has(stopId) && emtTripsMap.has(tripId)) {
+            if (!emtStopTimes.has(stopId)) {
+                emtStopTimes.set(stopId, []);
+            }
+            emtStopTimes.get(stopId).push({
+                tripId: tripId,
+                departureTime: cols[depIdx]
+            });
+        }
+    }
+}
+
+function renderEMTStopsOnMap() {
+    emtLayerGroup.clearLayers();
+    emtStopsMap.forEach(st => {
+        const lat = parseFloat(st.LATITUD);
+        const lon = parseFloat(st.LONGITUD);
+
+        if (!isNaN(lat) && !isNaN(lon)) {
+            const marker = L.marker([lat, lon], { icon: busIcon });
+            marker.on('click', () => showStationDetails(st));
+            emtLayerGroup.addLayer(marker);
+        }
+    });
+}
+
+// ==========================================
+// RENDER DIBUJO RUTA Y DETALLES MODAL
+// ==========================================
+
+function renderShapesForStation(station) {
+    shapesLayerGroup.clearLayers();
+
+    const isBus = station.isBus;
+    const targetStopTimes = isBus ? emtStopTimes : stopTimesByStation;
+    const targetTripsMap = isBus ? emtTripsMap : tripsMap;
+    const targetRoutesMap = isBus ? emtRoutesMap : routesMap;
+    const targetRouteToShapesMap = isBus ? emtRouteToShapesMap : routeToShapesMap;
+    const targetShapePointsMap = isBus ? emtShapePointsMap : shapePointsMap;
+
+    const rawSchedules = targetStopTimes.get(station.CÓDIGO) || [];
     if (rawSchedules.length === 0) return;
 
-    // Obtenir quines rutes (línies) passen per aquesta estació
     const stationRouteIds = new Set();
     rawSchedules.forEach(st => {
-        const trip = tripsMap.get(st.tripId);
+        const trip = targetTripsMap.get(st.tripId);
         if (trip && trip.routeId) {
             stationRouteIds.add(trip.routeId);
         }
     });
 
-    // Per a cada línia de l'estació, pintar les seues geometries
     stationRouteIds.forEach(routeId => {
-        const route = routesMap.get(routeId);
-        const routeColor = route ? route.color : '#d97706';
-        const shapeIds = routeToShapesMap.get(routeId);
+        const route = targetRoutesMap.get(routeId);
+        const routeColor = route ? route.color : (isBus ? '#ef4444' : '#d97706');
+        const shapeIds = targetRouteToShapesMap.get(routeId);
 
         if (!shapeIds) return;
 
         shapeIds.forEach(shapeId => {
-            const points = shapePointsMap.get(shapeId);
+            const points = targetShapePointsMap.get(shapeId);
             if (!points || points.length === 0) return;
 
-            // Ordenar els punts segons el camp sequence (seq)
             points.sort((a, b) => a.seq - b.seq);
             const latLngs = points.map(p => [p.lat, p.lon]);
 
-            // Dibuixar la polilínia amb el color de la ruta de routes.csv
             L.polyline(latLngs, {
                 color: routeColor,
-                weight: 4,
+                weight: isBus ? 3 : 4,
                 opacity: 0.85
             }).addTo(shapesLayerGroup);
         });
@@ -356,10 +635,13 @@ function getDestinationInfo(trip, route) {
 }
 
 function showStationDetails(station) {
-    // 1. Dibuixar només les línies d'aquesta estació
-    renderShapesForStation(station.CÓDIGO);
+    renderShapesForStation(station);
 
-    // 2. Obrir el modal amb la informació
+    const isBus = station.isBus;
+    const targetStopTimes = isBus ? emtStopTimes : stopTimesByStation;
+    const targetTripsMap = isBus ? emtTripsMap : tripsMap;
+    const targetRoutesMap = isBus ? emtRoutesMap : routesMap;
+
     const modal = document.getElementById('station-modal');
     document.getElementById('modal-station-name').textContent = station.DESCRIPCION;
     document.getElementById('modal-station-code').textContent = `Codi: ${station.CÓDIGO} | ${station.POBLACION}`;
@@ -367,10 +649,10 @@ function showStationDetails(station) {
     const listContainer = document.getElementById('modal-schedules-list');
     listContainer.innerHTML = '';
 
-    const rawSchedules = stopTimesByStation.get(station.CÓDIGO) || [];
+    const rawSchedules = targetStopTimes.get(station.CÓDIGO) || [];
 
     if (rawSchedules.length === 0) {
-        listContainer.innerHTML = '<div class="schedule-row">No hi ha trens programats per a hui en aquesta estació.</div>';
+        listContainer.innerHTML = `<div class="schedule-row">No hi ha ${isBus ? 'autobusos' : 'trens'} programats per a hui en aquesta parada.</div>`;
     } else {
         const now = new Date();
         const currentHHMMSS = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00`;
@@ -381,11 +663,11 @@ function showStationDetails(station) {
         displayList.sort((a, b) => a.departureTime.localeCompare(b.departureTime));
 
         displayList.slice(0, 15).forEach(st => {
-            const trip = tripsMap.get(st.tripId);
-            const route = trip ? routesMap.get(trip.routeId) : null;
+            const trip = targetTripsMap.get(st.tripId);
+            const route = trip ? targetRoutesMap.get(trip.routeId) : null;
 
-            const routeName = route ? route.shortName : 'Rodalia';
-            const routeColor = route ? route.color : '#d97706';
+            const routeName = route ? route.shortName : (isBus ? 'Bus' : 'Rodalia');
+            const routeColor = route ? route.color : (isBus ? '#ef4444' : '#d97706');
             const routeTextColor = route ? route.textColor : '#ffffff';
             const destination = getDestinationInfo(trip, route);
 
