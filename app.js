@@ -634,59 +634,48 @@ function getDestinationInfo(trip, route) {
     return 'Destí no especificat';
 }
 
-function showStationDetails(station) {
-    renderShapesForStation(station);
-
-    const isBus = station.isBus;
-    const targetStopTimes = isBus ? emtStopTimes : stopTimesByStation;
-    const targetTripsMap = isBus ? emtTripsMap : tripsMap;
-    const targetRoutesMap = isBus ? emtRoutesMap : routesMap;
-
+async function showStationDetails(station) {
     const modal = document.getElementById('station-modal');
     document.getElementById('modal-station-name').textContent = station.DESCRIPCION;
     document.getElementById('modal-station-code').textContent = `Codi: ${station.CÓDIGO} | ${station.POBLACION}`;
 
     const listContainer = document.getElementById('modal-schedules-list');
-    listContainer.innerHTML = '';
+    listContainer.innerHTML = `<div class="loading-spinner">Carregant horaris des del servidor...</div>`;
 
-    const rawSchedules = targetStopTimes.get(station.CÓDIGO) || [];
+    modal.classList.add('active');
 
-    if (rawSchedules.length === 0) {
-        listContainer.innerHTML = `<div class="schedule-row">No hi ha ${isBus ? 'autobusos' : 'trens'} programats per a hui en aquesta parada.</div>`;
-    } else {
-        const now = new Date();
-        const currentHHMMSS = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00`;
+    try {
+        // Petición ultrarrápida a nuestra Serverless Function de Vercel
+        const response = await fetch(`/api/station?code=${station.CÓDIGO}&type=${station.isBus ? 'emt' : 'cercanias'}`);
+        if (!response.ok) throw new Error("Error en obtenir les dades");
 
-        const upcomingSchedules = rawSchedules.filter(st => st.departureTime >= currentHHMMSS);
-        const displayList = upcomingSchedules.length > 0 ? upcomingSchedules : rawSchedules;
+        const data = await response.json();
+        listContainer.innerHTML = '';
 
-        displayList.sort((a, b) => a.departureTime.localeCompare(b.departureTime));
+        if (!data.schedules || data.schedules.length === 0) {
+            listContainer.innerHTML = `<div class="schedule-row">No hi ha trens programats per a hui.</div>`;
+            return;
+        }
 
-        displayList.slice(0, 15).forEach(st => {
-            const trip = targetTripsMap.get(st.tripId);
-            const route = trip ? targetRoutesMap.get(trip.routeId) : null;
-
-            const routeName = route ? route.shortName : (isBus ? 'Bus' : 'Rodalia');
-            const routeColor = route ? route.color : (isBus ? '#ef4444' : '#d97706');
-            const routeTextColor = route ? route.textColor : '#ffffff';
-            const destination = getDestinationInfo(trip, route);
-
+        data.schedules.forEach(st => {
             const row = document.createElement('div');
             row.className = 'schedule-row';
             row.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; max-width: 75%;">
-                    <span style="background-color: ${routeColor}; color: ${routeTextColor}; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; flex-shrink: 0;">
-                        ${routeName}
+                    <span style="background-color: ${st.routeColor}; color: ${st.routeTextColor}; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; flex-shrink: 0;">
+                        ${st.routeShortName}
                     </span>
                     <span style="font-size: 0.85rem; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        ➔ ${destination}
+                        ➔ ${st.headsign}
                     </span>
                 </div>
                 <span class="schedule-time">${st.departureTime.substring(0, 5)} h</span>
             `;
             listContainer.appendChild(row);
         });
-    }
 
-    modal.classList.add('active');
+    } catch (err) {
+        console.error(err);
+        listContainer.innerHTML = `<div class="schedule-row">Error al carregar els horaris.</div>`;
+    }
 }
